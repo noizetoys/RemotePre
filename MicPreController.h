@@ -1,31 +1,47 @@
 
+#ifndef MicPreController_h
+#define MicPreController_h
+
 #include "DataDisplay.h"
+#include "NetworkInterface.h"
+
+#define PRESSED 1
+#define RELEASED 0
+#define ON 1
+#define OFF 0
 
 
 class MicPreController {
+  private:
     MicPreData data;
     DataDisplay dataDisplay;
+    NetworkInterface network;
 
-    unsigned int deviceID;
-    
+    // For Buttons
+    bool padButtonState;
+    bool phantomButtonState;
+    bool polarityButtonState;
+    bool inputZButtonState;
+    bool muteButtonState;
+    bool highPassFilterButtonState;
+
+    void updateState(bool newPinState, bool *buttonMode, bool *state);
 
   public:
-    void setGainLevel(int gainValue);
-    void padTouched(bool state);
-    void phantomTouched(bool state);
-    void polarityTouched(bool state);
-    void inputZTouched(bool state);
-    void muteTouched(bool state);
-    void highPassTouched(bool state);
-    //    void setAudioLevel(int level);
+    void updateGainLevel(int value);
+    void updatePad(bool newPinState);
+    void updatePhantom(bool newPinState);
+    void updatePolarity(bool newPinState);
+    void updateInputZ(int newPinState);
+    void updateMute(int newPinState);
+    void updateHPF(int newPinState);
 
+    // Constructors
+    // Default
+    MicPreController() { }
 
-    MicPreController() {
-      deviceID = 33;
-    }
-
-    MicPreController(unsigned int id) {
-      deviceID = id;
-    }
-
+    // Non-Default
+    MicPreController(char id);
 };
+
+#endif

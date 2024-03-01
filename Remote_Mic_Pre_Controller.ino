@@ -7,21 +7,28 @@
 #include "MicPreController.h"
 
 
-#define switchPin 2
+//#define SWITCH 2
 
-#define ID1 5
-#define ID2 6
-#define ID3 7
-#define ID4 8
-#define ID5 9
+#define ID1 A0
+#define ID2 A1
+#define ID3 A2
+#define ID4 A3
+#define ID5 A4
 
-int pinState = LOW;
+char pinState = LOW;
 
+#define padPin 2
+#define phantomPin 5
+#define polarityPin 7
+
+MicPreController micPreController;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(switchPin, INPUT);
-  //  pinMode(switchPin, INPUT_PULLUP);
+
+  pinMode(padPin, INPUT);
+  pinMode(phantomPin, INPUT);
+  pinMode(polarityPin, INPUT);
 
   pinMode(ID1, INPUT_PULLUP);
   pinMode(ID2, INPUT_PULLUP);
@@ -29,12 +36,12 @@ void setup() {
   pinMode(ID4, INPUT_PULLUP);
   pinMode(ID4, INPUT_PULLUP);
 
-  setDeviceID();
+  micPreController = MicPreController(setDeviceID());
 }
 
 
-void setDeviceID() {
-  Serial.println("Setting Device ID");
+char setDeviceID() {
+  Serial.print("Setting Device ID:  ");
   int id1 = !digitalRead(ID1) << 0;
   int id2 = !digitalRead(ID2) << 1;
   int id3 = !digitalRead(ID3) << 2;
@@ -42,34 +49,29 @@ void setDeviceID() {
   int id5 = !digitalRead(ID5) << 4;
 
   int xorbits = id1 ^ id2 ^ id3 ^ id4 ^ id5;
-  Serial.println("XOR'ed Bit shift");
   Serial.println(xorbits);
 }
 
 
-
-#define PRESSED 1
-#define RELEASED 0
-
-int button_mode = RELEASED;
-bool thingIsOn = false;
-
 void loop() {
-  pinState = digitalRead(switchPin);
-  
-  if ((pinState == PRESSED) && (button_mode == RELEASED)) {
-    button_mode = PRESSED;
-    
-    Serial.println("\nButton has been pressed.");
-  }
-  else if ((pinState == RELEASED) && (button_mode == PRESSED)) {
-    button_mode = RELEASED;
-    Serial.println("Button has been released");
+  //  int newValue = digitalRead(padPin);
+  //  Serial.print("\nLOOP() --> pin '");
+  //  Serial.print(padPin);
+  //  Serial.print("' has a value of:  ");
+  //  Serial.println(newValue);
 
-    thingIsOn = thingIsOn == true ? false : true;
-    Serial.print("Thing Is On? ");
-    Serial.println(thingIsOn == true ? "YES" : "NO");
-  }
-  
+  micPreController.updatePad(bool(digitalRead(padPin)));
+  micPreController.updatePhantom(bool(digitalRead(phantomPin)));
+  micPreController.updatePolarity(bool(digitalRead(polarityPin)));
+
   delay(100); //small delay to account for button bounce.
 }
+
+/*
+   Pin State (Pressed/Released)
+
+   Function Button Mode (Pressed/Released)
+   Function Button State (On/Off)
+
+   Function State (active/inactive)
+*/
