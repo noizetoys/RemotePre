@@ -1,5 +1,4 @@
 
-//#ifndef
 
 //union InputZ {
 //  bool low;
@@ -43,11 +42,13 @@ class DataDisplay {
 
   public:
 
-    void setMicPreData(MicPreData data);
+//    void setMicPreData(MicPreData data);
 
+    DataDisplay() { }
 
+    
+    DataDisplay(MicPreData data) {
+      micPreData = data;
+    }
 
 };
-
-
-//#endif

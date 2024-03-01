@@ -1,4 +1,7 @@
 
+#include <EEPROM.h>
+
+
 typedef struct MicPreData {
   unsigned char gainLevel;
   bool padEngaged;
@@ -10,4 +13,11 @@ typedef struct MicPreData {
   bool highPassFilterEngaged;
   
   unsigned char deviceID;
+
+  MicPreData() { }
+
+  MicPreData(unsigned char id) {
+    deviceID = id;
+  }
+  
 } MicPreData;
