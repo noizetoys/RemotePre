@@ -4,34 +4,8 @@
 //#include <SPI.h>
 //#include <EEPROM.h>
 
+#include "MasterControl.h"
 
-// Gain Encoder
-// Pad Button
-// 48v button
-// Polarity Button
-// Input Z Button
-// Mute Button
-// HPF Button
-
-// OLED Display (SPI)
-// Raspberry Pi Controller (I2C)
-
-// ID Dipswitches
-// Autolevel dipswitch
-
-/*
-   Display Items
-   Gain Level
-   'db' marking
-   Pad
-   48V
-   Polarity
-   Input Z
-   Mute
-   HPF
-   Device ID
-   Audio Level
-*/
 
 #define switchPin 2
 
@@ -40,17 +14,6 @@
 #define ID3 7
 #define ID4 8
 #define ID5 9
-
-#define UP LOW
-#define DOWN HIGH
-
-#define ON HIGH
-#define OFF LOW
-
-//int switchState = UP;
-//int previousSwitchState = UP;
-//int buttonState = UP;
-//bool somethingOn = false;
 
 int pinState = LOW;
 
@@ -67,26 +30,6 @@ void setup() {
   pinMode(ID4, INPUT_PULLUP);
 
   setDeviceID();
-
-  //  switchState = UP;
-  //  previousSwitchState = UP;
-  //  buttonState = OFF;
-  //  somethingOn = false;
-
-  //  Serial.print("LOW == ");
-  //  Serial.println(LOW);
-  //  Serial.print("HIGH == ");
-  //  Serial.println(HIGH);
-  //
-  //  Serial.print("UP == ");
-  //  Serial.println(UP);
-  //  Serial.print("DOWN == ");
-  //  Serial.println(DOWN);
-  //
-  //  Serial.print("OFF == ");
-  //  Serial.println(OFF);
-  //  Serial.print("ON == ");
-  //  Serial.println(ON);
 }
 
 
@@ -121,10 +64,10 @@ void loop() {
   }
   else if ((pinState == RELEASED) && (button_mode == PRESSED)) {
     button_mode = RELEASED;
-    Serial.println("\nButton has been released");
+    Serial.println("Button has been released");
 
     thingIsOn = thingIsOn == true ? false : true;
-    Serial.print("Thing Is On?    ");
+    Serial.print("Thing Is On? ");
     Serial.println(thingIsOn == true ? "YES" : "NO");
   }
   
