@@ -1,10 +1,5 @@
 
 
-//union InputZ {
-//  bool low;
-//  bool hi;
-//} inputZ;
-
 #include "DataTypes.h"
 
 

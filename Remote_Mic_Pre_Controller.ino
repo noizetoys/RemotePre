@@ -7,19 +7,14 @@
 #include "MicPreController.h"
 
 
-//#define SWITCH 2
-
-#define ID1 A0
-#define ID2 A1
-#define ID3 A2
-#define ID4 A3
-#define ID5 A4
-
 char pinState = LOW;
 
 #define padPin 2
-#define phantomPin 5
-#define polarityPin 7
+#define phantomPin 3
+#define polarityPin 4
+#define inputZPin 5
+#define mutePin 6
+#define highPassFilterPin 7
 
 MicPreController micPreController;
 
@@ -29,12 +24,9 @@ void setup() {
   pinMode(padPin, INPUT);
   pinMode(phantomPin, INPUT);
   pinMode(polarityPin, INPUT);
-
-  pinMode(ID1, INPUT_PULLUP);
-  pinMode(ID2, INPUT_PULLUP);
-  pinMode(ID3, INPUT_PULLUP);
-  pinMode(ID4, INPUT_PULLUP);
-  pinMode(ID4, INPUT_PULLUP);
+  pinMode(inputZPin, INPUT);
+  pinMode(mutePin, INPUT);
+  pinMode(highPassFilterPin, INPUT);
 
   micPreController = MicPreController(setDeviceID());
 }
@@ -42,6 +34,18 @@ void setup() {
 
 char setDeviceID() {
   Serial.print("Setting Device ID:  ");
+  const int ID1 = A0;
+  const int ID2 = A1;
+  const int ID3 = A2;
+  const int ID4 = A3;
+  const int ID5 = A4;
+
+  pinMode(ID1, INPUT_PULLUP);
+  pinMode(ID2, INPUT_PULLUP);
+  pinMode(ID3, INPUT_PULLUP);
+  pinMode(ID4, INPUT_PULLUP);
+  pinMode(ID4, INPUT_PULLUP);
+
   int id1 = !digitalRead(ID1) << 0;
   int id2 = !digitalRead(ID2) << 1;
   int id3 = !digitalRead(ID3) << 2;
@@ -60,9 +64,12 @@ void loop() {
   //  Serial.print("' has a value of:  ");
   //  Serial.println(newValue);
 
-  micPreController.updatePad(bool(digitalRead(padPin)));
-  micPreController.updatePhantom(bool(digitalRead(phantomPin)));
-  micPreController.updatePolarity(bool(digitalRead(polarityPin)));
+//  micPreController.updatePad(bool(digitalRead(padPin)));
+//  micPreController.updatePhantom(bool(digitalRead(phantomPin)));
+//  micPreController.updatePolarity(bool(digitalRead(polarityPin)));
+  micPreController.updateInputZ(bool(digitalRead(inputZPin)));
+  micPreController.updateMute(bool(digitalRead(mutePin)));
+  micPreController.updateHPF(bool(digitalRead(highPassFilterPin)));
 
   delay(100); //small delay to account for button bounce.
 }

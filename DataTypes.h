@@ -4,9 +4,9 @@
    Data sent to Display & Network
 */
 typedef struct MicPreData {
-  unsigned char gainLevel;
-  bool padEngaged;
+  unsigned int gainLevel;
 
+  bool padEngaged;
   bool phantomEngaged;
   bool polarityInverted;
   bool inputZIsHigh;
@@ -21,41 +21,28 @@ typedef struct MicPreData {
   bool muteButtonState;
   bool highPassFilterButtonState;
 
-  unsigned char deviceID;
+  unsigned int deviceID;
 
   MicPreData() { }
 
-  MicPreData(unsigned char id) {
+  MicPreData(int id) {
     deviceID = id;
+  }
 
-    // Button State
-//    padButtonState = false;
-//    phantomButtonState = false;
-//    polarityButtonState = false;
-//    inputZButtonState = false;
-//    muteButtonState = false;
-//    highPassFilterButtonState = false;
+  void resetData() {
+    padEngaged = false;
+    phantomEngaged = false;
+    polarityInverted = false;
+    inputZIsHigh = false;
+    muteEngaged = false;
+    highPassFilterEngaged = false;
 
-    // FUNCTION STATE
-//    gainLevel = 0;
-//    padEngaged = false;
-//
-//    phantomEngaged = false;
-//    polarityInverted = false;
-//    inputZIsHigh = false;
-//    muteEngaged = false;
-//    highPassFilterEngaged = false;
-
+    padButtonState = false;
+    phantomButtonState = false;
+    polarityButtonState = false;
+    inputZButtonState = false;
+    muteButtonState = false;
+    highPassFilterButtonState = false;
   }
 
 } MicPreData;
-
-
-enum MicPreButton {
-  pad = 2,
-  phantom = 3,
-  polarity = 4,
-  inputZ = 5,
-  mute = 6,
-  highPassFilter = 7,
-};
