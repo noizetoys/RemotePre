@@ -1,7 +1,5 @@
 
-
 #include "MicPreController.h"
-
 
 // Buttons
 #define padPin 2
@@ -11,11 +9,11 @@
 #define mutePin 6
 #define highPassFilterPin 7
 
-
 // Encoder
 #define encoder0PinA 2
 #define encoder0PinB 3
 #define encoder0Btn 4
+
 volatile int encoder0Pos = 0;
 
 
@@ -30,16 +28,17 @@ void setup() {
   //  pinMode(phantomPin, INPUT);
   //  pinMode(polarityPin, INPUT);
   //  pinMode(inputZPin, INPUT);
-  //  pinMode(mutePin, INPUT);
+    pinMode(mutePin, INPUT);
   //  pinMode(highPassFilterPin, INPUT);
 
   // Encoder
   pinMode(encoder0PinA, INPUT_PULLUP);
-  pinMode(encoder0PinB, INPUT_PULLUP);
+  pinMode(encoder0PinB, INPUT_PULLUP);     
   pinMode(encoder0Btn, INPUT_PULLUP);
   attachInterrupt(0, doEncoder, CHANGE);
 
-  micPreController = MicPreController(setDeviceID());
+//  micPreController = MicPreController(setDeviceID());
+  micPreController = MicPreController(17);
   Serial.println("setUp complete!");
 }
 
@@ -69,8 +68,8 @@ char setDeviceID() {
 }
 
 
-volatile int rotationStep, newRotationStep;
-volatile int btn;
+volatile int rotationStep, newRotationStep, btn;
+
 
 void loop() {
   //  micPreController.updatePad(bool(digitalRead(padPin)));
@@ -78,12 +77,12 @@ void loop() {
   //  micPreController.updatePhantom(bool(digitalRead(phantomPin)));
   //  micPreController.updatePolarity(bool(digitalRead(polarityPin)));
   //  micPreController.updateInputZ(bool(digitalRead(inputZPin)));
-  //  micPreController.updateMute(bool(digitalRead(mutePin)));
+    micPreController.updateMute(bool(digitalRead(mutePin)));
   //  micPreController.updateHPF(bool(digitalRead(highPassFilterPin)));
 
 
   // Encoder
-  micPreController.updatePad(bool(!digitalRead(encoder0Btn)));
+//  micPreController.updatePad(bool(!digitalRead(encoder0Btn)));
 
   delay(200); //small delay to account for button bounce.
 }

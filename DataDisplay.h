@@ -25,20 +25,19 @@ class DataDisplay {
     //    void setInputZ(bool state);
     //    void setMute(bool state);
     //    void setHPF(bool state);
-    void setAudioLevel(int level);
+    //    void setAudioLevel(int level);
 
-    void updateDataDisplay(MicPreData data);
+//    void updateDataDisplay(MicPreData data);
 
-
+    void displayMute();
+    void displayReadout(MicPreData data);
+    
   public:
 
-    void setData(MicPreData data);
+    void displayData(MicPreData data);
 
-    DataDisplay() { }
-
-
-    //    DataDisplay(MicPreData data) {
-    //    }
+    DataDisplay();
+//    DataDisplay(MicPreData data);
 
 };
 
