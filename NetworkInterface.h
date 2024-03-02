@@ -1,3 +1,7 @@
+#ifndef NetworkInterface_h
+#define NetworkInterface_h
+
+
 #include <Wire.h>
 
 
@@ -12,3 +16,6 @@ class NetworkInterface {
       deviceID = id;
     }
 };
+
+
+#endif

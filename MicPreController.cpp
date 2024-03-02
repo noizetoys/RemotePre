@@ -1,11 +1,15 @@
-#include <Arduino.h>
 #include "MicPreController.h"
+
 
 MicPreController::MicPreController(char id)  {
   data = MicPreData();
   dataDisplay = DataDisplay();
   network = NetworkInterface(id);
 
+  /* 
+   *  Required to set all data properties to their 'OFF' state
+   *  Otherwise the properties contain garbage
+   */
   data.resetData();
 }
 
@@ -15,22 +19,6 @@ void MicPreController::updateGainLevel(int value) {
 }
 
 void MicPreController::updatePad(bool newPinState) {
-  //  if (data.padButtonState != newPinState) {
-  //    //  if (data.padButtonState != newPinState) {
-  //    Serial.print("\n--> MicPreController::updatePad:");
-  //    Serial.print(", newPinState: ");
-  //    Serial.print(newPinState);
-  //
-  //    Serial.print(", padButtonState: ");
-  //    Serial.print(data.padButtonState);
-  //    Serial.print(", padButtonState Address: ");
-  //    Serial.print(int(&data.padButtonState));
-  //
-  //    Serial.print(", padEngaged: ");
-  //    Serial.print(data.padEngaged);
-  //    Serial.print(", padEngaged Address: ");
-  //    Serial.println(int(&data.padEngaged));
-
   if (data.padButtonState != newPinState) {
     Serial.println("Pad Button Pressed");
     updateState(newPinState, &data.padButtonState, &data.padEngaged);

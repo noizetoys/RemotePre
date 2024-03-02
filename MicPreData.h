@@ -1,7 +1,15 @@
 
+#ifndef MicPreData_h
+#define MicPreData_h
+
 
 /*
-   Data sent to Display & Network
+   Pin State (Pressed/Released)
+
+   Function Button Mode (Pressed/Released)
+   Function Button State (On/Off)
+
+   Function State (active/inactive)
 */
 typedef struct MicPreData {
   unsigned int gainLevel;
@@ -46,3 +54,5 @@ typedef struct MicPreData {
   }
 
 } MicPreData;
+
+#endif

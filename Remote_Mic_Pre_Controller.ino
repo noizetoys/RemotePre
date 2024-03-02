@@ -1,14 +1,9 @@
 
 
-//#include <Wire.h>
-//#include <SPI.h>
-//#include <EEPROM.h>
-
 #include "MicPreController.h"
 
 
-char pinState = LOW;
-
+// Buttons
 #define padPin 2
 #define phantomPin 3
 #define polarityPin 4
@@ -16,24 +11,41 @@ char pinState = LOW;
 #define mutePin 6
 #define highPassFilterPin 7
 
+
+// Encoder
+#define encoder0PinA 2
+#define encoder0PinB 3
+#define encoder0Btn 4
+volatile int encoder0Pos = 0;
+
+
 MicPreController micPreController;
 
-void setup() {
-  Serial.begin(9600);
 
-  pinMode(padPin, INPUT);
-  pinMode(phantomPin, INPUT);
-  pinMode(polarityPin, INPUT);
-  pinMode(inputZPin, INPUT);
-  pinMode(mutePin, INPUT);
-  pinMode(highPassFilterPin, INPUT);
+void setup() {
+  Serial.begin(115200);
+
+  // Buttons
+  //  pinMode(padPin, INPUT);
+  //  pinMode(phantomPin, INPUT);
+  //  pinMode(polarityPin, INPUT);
+  //  pinMode(inputZPin, INPUT);
+  //  pinMode(mutePin, INPUT);
+  //  pinMode(highPassFilterPin, INPUT);
+
+  // Encoder
+  pinMode(encoder0PinA, INPUT_PULLUP);
+  pinMode(encoder0PinB, INPUT_PULLUP);
+  pinMode(encoder0Btn, INPUT_PULLUP);
+  attachInterrupt(0, doEncoder, CHANGE);
 
   micPreController = MicPreController(setDeviceID());
+  Serial.println("setUp complete!");
 }
 
 
 char setDeviceID() {
-  Serial.print("Setting Device ID:  ");
+  //  Serial.print("Setting Device ID:  ");
   const int ID1 = A0;
   const int ID2 = A1;
   const int ID3 = A2;
@@ -53,32 +65,76 @@ char setDeviceID() {
   int id5 = !digitalRead(ID5) << 4;
 
   int xorbits = id1 ^ id2 ^ id3 ^ id4 ^ id5;
-  Serial.println(xorbits);
+  //  Serial.println(xorbits);
 }
 
+
+volatile int rotationStep, newRotationStep;
+volatile int btn;
 
 void loop() {
-  //  int newValue = digitalRead(padPin);
-  //  Serial.print("\nLOOP() --> pin '");
-  //  Serial.print(padPin);
-  //  Serial.print("' has a value of:  ");
-  //  Serial.println(newValue);
+  //  micPreController.updatePad(bool(digitalRead(padPin)));
 
-//  micPreController.updatePad(bool(digitalRead(padPin)));
-//  micPreController.updatePhantom(bool(digitalRead(phantomPin)));
-//  micPreController.updatePolarity(bool(digitalRead(polarityPin)));
-  micPreController.updateInputZ(bool(digitalRead(inputZPin)));
-  micPreController.updateMute(bool(digitalRead(mutePin)));
-  micPreController.updateHPF(bool(digitalRead(highPassFilterPin)));
+  //  micPreController.updatePhantom(bool(digitalRead(phantomPin)));
+  //  micPreController.updatePolarity(bool(digitalRead(polarityPin)));
+  //  micPreController.updateInputZ(bool(digitalRead(inputZPin)));
+  //  micPreController.updateMute(bool(digitalRead(mutePin)));
+  //  micPreController.updateHPF(bool(digitalRead(highPassFilterPin)));
 
-  delay(100); //small delay to account for button bounce.
+
+  // Encoder
+  micPreController.updatePad(bool(!digitalRead(encoder0Btn)));
+
+  delay(200); //small delay to account for button bounce.
 }
 
-/*
-   Pin State (Pressed/Released)
 
-   Function Button Mode (Pressed/Released)
-   Function Button State (On/Off)
+volatile int AValue;
+volatile int BValue;
 
-   Function State (active/inactive)
-*/
+#define EncoderMin 1
+#define EncoderMax 60
+#define EncoderStep 5
+
+
+void doEncoder() {
+  AValue = digitalRead(encoder0PinA);
+  BValue = digitalRead(encoder0PinB);
+
+  if (encoder0Pos >= EncoderMin && encoder0Pos <= EncoderMax) {
+    AValue == BValue ? encoder0Pos++ : encoder0Pos--;
+  }
+
+  //  Serial.print("doEncoder:  Current Encoder Value = ");
+  //  Serial.println(encoder0Pos);
+
+  newRotationStep = (encoder0Pos / EncoderStep);
+
+  if (newRotationStep != rotationStep && encoder0Pos >= EncoderStep) {
+    //    Serial.println("\n \t ~~~~~> NEW rotationStep SET !!!!!!!!!!");
+    //    Serial.print("\tOld Rotation Step = ");
+    //    Serial.print(rotationStep);
+    //    Serial.print(", NEW Rotation Step = ");
+    //    Serial.println(newRotationStep);
+    rotationStep = newRotationStep;
+
+    Serial.print("\nRotationStep = ");
+    Serial.println(rotationStep);
+
+  }
+
+
+  if (encoder0Pos < EncoderMin) {
+    //    Serial.print(EncoderMin);
+    //    Serial.println(" Hit, No Change");
+    encoder0Pos = EncoderMin;
+    rotationStep = EncoderMin;
+  }
+  else if (encoder0Pos > EncoderMax) {
+    //    Serial.print(EncoderMax);
+    //    Serial.println(" Hit, No Change");
+    encoder0Pos = EncoderMax;
+    rotationStep = EncoderMax / EncoderStep;
+  }
+
+}

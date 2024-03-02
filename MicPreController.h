@@ -2,6 +2,7 @@
 #ifndef MicPreController_h
 #define MicPreController_h
 
+#include <Arduino.h>
 #include "DataDisplay.h"
 #include "NetworkInterface.h"
 
@@ -23,7 +24,7 @@ class MicPreController {
     void updateMute(bool newPinState);
     void updateHPF(bool newPinState);
 
-    // Constructors
+  // Constructors
     MicPreController() { }
 
     // Non-Default
