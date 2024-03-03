@@ -9,11 +9,13 @@
 
 class MicPreController {
   private:
-    MicPreData data;
+    MicPreData micPreData;
     DataDisplay dataDisplay;
+    
     NetworkInterface network;
 
     void updateState(bool newPinState, bool *buttonMode, bool *state);
+
 
   public:
     void updateGainLevel(int value);
@@ -30,7 +32,7 @@ class MicPreController {
     MicPreController() { }
 
     // Non-Default
-    MicPreController(char id);
+    MicPreController(char id, Adafruit_SSD1306 *oledDisplay);
 };
 
 #endif

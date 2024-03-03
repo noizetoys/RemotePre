@@ -9,36 +9,31 @@
 #include <Adafruit_SSD1306.h>
 
 
-
-class DataDisplay {
-
-  private:
-    unsigned int gainLevels[12];
     //['25', '29', '33', '36', '39', '42', '45', '48', '51', '54', '57', '60'];
 
-
+class DataDisplay {
   private:
-    //    void setGainLevel(int gainValue);
-    //    void setPad(bool state);
-    //    void set48v(bool state);
-    //    void setPolarity(bool state);
-    //    void setInputZ(bool state);
-    //    void setMute(bool state);
-    //    void setHPF(bool state);
-    //    void setAudioLevel(int level);
+    Adafruit_SSD1306 *display;
 
-//    void updateDataDisplay(MicPreData data);
-
+    void resetText();
+    void displayAllItems();
     void displayMute();
-    void displayReadout(MicPreData data);
-    
+
+    void displayPhantom();
+    void displayPolarity();
+    void displayInputZ();
+    void displayPad();
+    void displayHPF();
+    void displayGain();
+
+    MicPreData *micPreData;
+
+
   public:
+    void updateDisplay();
 
-    void displayData(MicPreData data);
-
-    DataDisplay();
-//    DataDisplay(MicPreData data);
-
+    DataDisplay() {}
+    DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data);
 };
 
 

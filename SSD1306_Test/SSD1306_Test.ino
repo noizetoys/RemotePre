@@ -1,9 +1,7 @@
-//#include <Wire.h>
-//#include <Adafruit_GFX.h>
-//#include <Adafruit_SSD1306.h>
 #include "GainEncoder.h"
 #include "DataReadout.h"
-#include "DisplayData.h"
+#include "MicPreData.h"
+#include "MicPreControl.h"
 
 /*
    Screen
@@ -20,19 +18,17 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 #define encoder0PinB 3
 #define encoder0Btn 4
 
-#define EncoderMin 1
-#define EncoderMax 120
-#define EncoderStep 8
+//#define EncoderMin 1
+//#define EncoderMax 120
+//#define EncoderStep 8
+//
+//volatile int encoder0Pos = 0;
+//volatile int AValue;
+//volatile int BValue;
+//volatile int rotationStep, newRotationStep, btn;
 
-volatile int encoder0Pos = 0;
-volatile int AValue;
-volatile int BValue;
-volatile int rotationStep, newRotationStep, btn;
 
-
-/*
-   Buttons
-*/
+/* Buttons */
 #define phantomButton 8
 #define polarityButton 9
 #define inputZButton 10
@@ -50,19 +46,19 @@ volatile int rotationStep, newRotationStep, btn;
 */
 
 
-GainEncoder encoder;
+//GainEncoder encoder;
+MicPreControl micPreControl;
 DataReadout dataReadout;
-DisplayData displayData;
+MicPreData micPreData;
+
 
 void setup() {
   Serial.begin(115200);
 
   //  encoder = GainEncoder();
-  //    attachInterrupt(0, encoder.readEncoder, CHANGE);
+  //  attachInterrupt(0, readEncoder, CHANGE);
+  //  attachInterrupt(digitalPinToInterrupt(2), readEncoder, CHANGE);
 
-  //  attachInterrupt(0, encoder.readEncoder, CHANGE);
-
- 
   // Buttons
   buttonConfig();
 
@@ -70,12 +66,15 @@ void setup() {
   encoderConfig();
 
   // Device ID
-  deviceIDConfig();
+  //  deviceIDConfig();
 
+  // OLED Display
 
-  displayData = DisplayData();
+  micPreData = MicPreData(deviceID());
+  dataReadout = DataReadout(&display, &micPreData);
+//  MicPreControl(int id, MicPreData * data, DataReadout * readoutDisplay);
 
-  dataReadout = DataReadout(&display, &displayData);
+  micPreControl = MicPreControl(&micPreData, &dataReadout);
 }
 
 
@@ -84,7 +83,7 @@ void encoderConfig() {
   pinMode(encoder0PinB, INPUT_PULLUP);
   pinMode(encoder0Btn, INPUT_PULLUP);
 
-  attachInterrupt(0, doEncoder, CHANGE);
+  attachInterrupt(0, readEncoder, CHANGE);
 }
 
 
@@ -97,7 +96,7 @@ void buttonConfig() {
 }
 
 
-void deviceIDConfig() {
+int deviceID() {
   Serial.print("Setting Device ID:  ");
   const int ID0 = A0;
   const int ID1 = A1;
@@ -117,8 +116,10 @@ void deviceIDConfig() {
   int id3 = !digitalRead(ID3) << 3;
   int id4 = !digitalRead(ID4) << 4;
 
-  int xorbits = id0 ^ id1 ^ id2 ^ id3 ^ id4;
-  Serial.println(xorbits);
+  int deviceID = id0 ^ id1 ^ id2 ^ id3 ^ id4;
+  Serial.println(deviceID);
+
+  return deviceID;
 }
 
 
@@ -126,41 +127,43 @@ void deviceIDConfig() {
    Encoder
 */
 
-void doEncoder() {
-  AValue = digitalRead(encoder0PinA);
-  BValue = digitalRead(encoder0PinB);
+void readEncoder() {
+  //  AValue = digitalRead(encoder0PinA);
+  //  BValue = digitalRead(encoder0PinB);
 
-  if (encoder0Pos >= EncoderMin && encoder0Pos <= EncoderMax) {
-    AValue == BValue ? encoder0Pos++ : encoder0Pos--;
-  }
+  micPreControl.updateGainLevel(digitalRead(encoder0PinA), digitalRead(encoder0PinB));
 
-  //  Serial.print("doEncoder:  Current Encoder Value = ");
-  //  Serial.println(encoder0Pos);
+  //  if (encoder0Pos >= EncoderMin && encoder0Pos <= EncoderMax) {
+  //    AValue == BValue ? encoder0Pos++ : encoder0Pos--;
+  //  }
+  //
+  //  //  Serial.print("doEncoder:  Current Encoder Value = ");
+  //  //  Serial.println(encoder0Pos);
+  //
+  //  newRotationStep = (encoder0Pos / EncoderStep);
+  //
+  //  if (newRotationStep != rotationStep && encoder0Pos >= EncoderStep) {
+  //    rotationStep = newRotationStep;
+  //    Serial.print("\nRotationStep = ");
+  //    Serial.println(rotationStep);
+  //  }
+  //
+  //  if (encoder0Pos < EncoderMin) {
+  //    Serial.print(EncoderMin);
+  //    Serial.println(" Hit, No Change");
+  //    encoder0Pos = EncoderMin;
+  //    rotationStep = EncoderMin;
+  //  }
+  //  else if (encoder0Pos > EncoderMax) {
+  //    Serial.print(EncoderMax);
+  //    Serial.println(" Hit, No Change");
+  //    encoder0Pos = EncoderMax;
+  //    rotationStep = EncoderMax / EncoderStep;
+  //  }
+  //
+  //  micPreData.gainLevel = rotationStep;
 
-  newRotationStep = (encoder0Pos / EncoderStep);
-
-  if (newRotationStep != rotationStep && encoder0Pos >= EncoderStep) {
-    rotationStep = newRotationStep;
-    Serial.print("\nRotationStep = ");
-    Serial.println(rotationStep);
-  }
-
-  if (encoder0Pos < EncoderMin) {
-    Serial.print(EncoderMin);
-    Serial.println(" Hit, No Change");
-    encoder0Pos = EncoderMin;
-    rotationStep = EncoderMin;
-  }
-  else if (encoder0Pos > EncoderMax) {
-    Serial.print(EncoderMax);
-    Serial.println(" Hit, No Change");
-    encoder0Pos = EncoderMax;
-    rotationStep = EncoderMax / EncoderStep;
-  }
-
-  displayData.gainLevel = rotationStep;
-
-//  dataReadout.updateDisplay();
+  //    dataReadout.updateDisplay();
 }
 
 
@@ -169,40 +172,44 @@ void doEncoder() {
 */
 
 void loop() {
-  displayData.muteButtonState = bool(digitalRead(encoder0Btn));
+  micPreControl.updateMute(bool(digitalRead(encoder0Btn)));
 
-  displayData.phantomButtonState = bool(digitalRead(phantomButton));
-  displayData.polarityButtonState = bool(digitalRead(polarityButton));
-  displayData.inputZButtonState = bool(digitalRead(inputZButton));
-  displayData.padButtonState = bool(digitalRead(padButton));
-  displayData.highPassFilterButtonState = bool(digitalRead(hpfButton));
+  micPreControl.updatePad(bool(digitalRead(padButton)));
+  micPreControl.updatePhantom(bool(digitalRead(phantomButton)));
+  micPreControl.updatePolarity(bool(digitalRead(polarityButton)));
+  micPreControl.updateInputZ(bool(digitalRead(inputZButton)));
+  micPreControl.updateHPF(bool(digitalRead(hpfButton)));
 
+  //  serialPrintData();
 
-//  Serial.print("\nEncoder Button State:  ");
-//  Serial.println(displayData.muteButtonState == HIGH ? "HIGH" : "LOW");
-//
-//  Serial.print("Phantom State:  ");
-//  Serial.println(displayData.phantomButtonState == HIGH ? "HIGH" : "LOW");
-//
-//  Serial.print("Polarity State:  ");
-//  Serial.println(displayData.polarityButtonState == HIGH ? "HIGH" : "LOW");
-//
-//  Serial.print("Input Z State:  ");
-//  Serial.println(displayData.inputZButtonState == HIGH ? "HIGH" : "LOW");
-//
-//  Serial.print("Pad State:  ");
-//  Serial.println(displayData.padButtonState == HIGH ? "HIGH" : "LOW");
-//
-//  Serial.print("HPF State:  ");
-//  Serial.println(displayData.highPassFilterButtonState == HIGH ? "HIGH" : "LOW");
-
-  if (displayData.muteButtonState == LOW) {
-    //  if (digitalRead(MUTE_BUTTON) == HIGH || digitalRead(encoder0Btn) == HIGH) {
-//    displayMute();
-    Serial.println("MUTE should be Shown!");
-  }
-
-  dataReadout.updateDisplay();
+  //  dataReadout.updateDisplay();
 
   delay(250);
 }
+
+
+//void serialPrintData() {
+//  if (micPreData.muteButtonState == LOW) {
+//    //  if (digitalRead(MUTE_BUTTON) == HIGH || digitalRead(encoder0Btn) == HIGH) {
+//    Serial.println("MUTE should be Shown!");
+//  }
+//
+//  Serial.print("\nEncoder Button State:  ");
+//  Serial.println(micPreData.muteButtonState == HIGH ? "HIGH" : "LOW");
+//
+//  Serial.print("Phantom State:  ");
+//  Serial.println(micPreData.phantomButtonState == HIGH ? "HIGH" : "LOW");
+//
+//  Serial.print("Polarity State:  ");
+//  Serial.println(micPreData.polarityButtonState == HIGH ? "HIGH" : "LOW");
+//
+//  Serial.print("Input Z State:  ");
+//  Serial.println(micPreData.inputZButtonState == HIGH ? "HIGH" : "LOW");
+//
+//  Serial.print("Pad State:  ");
+//  Serial.println(micPreData.padButtonState == HIGH ? "HIGH" : "LOW");
+//
+//  Serial.print("HPF State:  ");
+//  Serial.println(micPreData.highPassFilterButtonState == HIGH ? "HIGH" : "LOW");
+//
+//}

@@ -22,7 +22,7 @@ class GainEncoder  {
     volatile int rotationStep, newRotationStep, btn;
 
   public:
-    int readEncoder();
+    void readEncoder();
 
     GainEncoder();
 

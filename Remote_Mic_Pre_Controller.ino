@@ -14,17 +14,26 @@
 #define encoder0Btn 4   // Pad
 
 #define EncoderMin 1
-#define EncoderMax 60
-#define EncoderStep 5
+#define EncoderMax 120
+#define EncoderStep 8
 
 volatile int encoder0Pos = 0;
 volatile int AValue;
 volatile int BValue;
 volatile int rotationStep, newRotationStep, btn;
 
-int muteButtonState;
 
+/*
+   Screen
+*/
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
 
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+/*
+   Main Control
+*/
 MicPreController micPreController;
 
 /*
@@ -41,14 +50,22 @@ void setup() {
   Serial.begin(115200);
   Serial.println("SetUp Started....");
 
-  micPreController = MicPreController(setDeviceID());
+  if (display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+    Serial.println("SSD1306 Allocation Failed!!!");
+    for (;;);
+  }
+ else {
+    Serial.println("---> SSD1306 Allocated!!!");
+  }
+
+  delay(2000);
+
+  micPreController = MicPreController(setDeviceID(), &display);
 
   encoderConfig();
 
   buttonConfig();
 
-
-  //  micPreController = MicPreController(17);
   Serial.println("setUp complete!");
 }
 

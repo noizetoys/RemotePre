@@ -4,17 +4,21 @@
 
 
 GainEncoder::GainEncoder() {
+  Serial.println("GainEncoder init!!!");
+
   pinMode(encoder0PinA, INPUT_PULLUP);
   pinMode(encoder0PinB, INPUT_PULLUP);
   pinMode(encoder0Btn, INPUT_PULLUP);
 
-//  attachInterrupt(0, GainEncoder::readEncoder, CHANGE);
+//  attachInterrupt(0, readEncoder, CHANGE);
 }
 
 
 // Public
 
-int GainEncoder::readEncoder() {
+void GainEncoder::readEncoder() {
+  Serial.println("GainEncoder::readEncoder() called");
+
   AValue = digitalRead(encoder0PinA);
   BValue = digitalRead(encoder0PinB);
 
@@ -46,5 +50,5 @@ int GainEncoder::readEncoder() {
     rotationStep = EncoderMax / EncoderStep;
   }
 
-  return rotationStep;
+//  return rotationStep;
 }

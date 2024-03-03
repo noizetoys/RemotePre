@@ -2,65 +2,66 @@
 #include "MicPreController.h"
 
 
-MicPreController::MicPreController(char id)  {
+MicPreController::MicPreController(char id, Adafruit_SSD1306 *oledDisplay)  {
   Serial.print("* MicPreController::MicPreController(char id) called!  ID = ");
-  Serial.println(id);
-  
-  data = MicPreData();
-  dataDisplay = DataDisplay();
+  Serial.println(int(id));
+
+  micPreData = MicPreData();
+  dataDisplay = DataDisplay(oledDisplay, &micPreData);
   //  network = NetworkInterface(id);
 
   /*
       Required to set all data properties to their 'OFF' state
       Otherwise the properties contain garbage
   */
-  data.resetData();
+  micPreData.resetData();
 }
 
 
 void MicPreController::updateGainLevel(int value) {
+    Serial.println("MicPreController: Phantom Button Pressed");
 
 }
 
 void MicPreController::updatePad(bool newPinState) {
-  if (data.padButtonState != newPinState) {
-    Serial.println("Pad Button Pressed");
-    updateState(newPinState, &data.padButtonState, &data.padEngaged);
+  if (micPreData.padButtonState != newPinState) {
+    Serial.println("MicPreController: Pad Button Pressed");
+    updateState(newPinState, &micPreData.padButtonState, &micPreData.padEngaged);
   }
 }
 
 void MicPreController::updatePhantom(bool newPinState) {
-  if (data.phantomButtonState != newPinState) {
-    Serial.println("Phantom Button Pressed");
-    updateState(newPinState, &data.phantomButtonState, &data.phantomEngaged);
+  if (micPreData.phantomButtonState != newPinState) {
+    Serial.println("MicPreController: Phantom Button Pressed");
+    updateState(newPinState, &micPreData.phantomButtonState, &micPreData.phantomEngaged);
   }
 }
 
 void MicPreController::updatePolarity(bool newPinState) {
-  if (data.polarityButtonState != newPinState) {
-    Serial.println("Polarity Button Pressed");
-    updateState(newPinState, &data.polarityButtonState, &data.polarityInverted);
+  if (micPreData.polarityButtonState != newPinState) {
+    Serial.println("MicPreController: Polarity Button Pressed");
+    updateState(newPinState, &micPreData.polarityButtonState, &micPreData.polarityInverted);
   }
 }
 
 void MicPreController::updateInputZ(bool newPinState) {
-  if (data.inputZButtonState != newPinState) {
-    Serial.println("InputZ Button Pressed");
-    updateState(newPinState, &data.inputZButtonState, &data.inputZIsHigh);
+  if (micPreData.inputZButtonState != newPinState) {
+    Serial.println("MicPreController: InputZ Button Pressed");
+    updateState(newPinState, &micPreData.inputZButtonState, &micPreData.inputZIsHigh);
   }
 }
 
 void MicPreController::updateMute(bool newPinState) {
-  if (data.muteButtonState != newPinState) {
-    Serial.println("Mute Button Pressed");
-    updateState(newPinState, &data.muteButtonState, &data.muteEngaged);
+  if (micPreData.muteButtonState != newPinState) {
+    Serial.println("MicPreController: Mute Button Pressed");
+    updateState(newPinState, &micPreData.muteButtonState, &micPreData.muteEngaged);
   }
 }
 
 void MicPreController::updateHPF(bool newPinState) {
-  if (data.highPassFilterButtonState != newPinState) {
-    Serial.println("High Pass Filter Button Pressed");
-    updateState(newPinState, &data.highPassFilterButtonState, &data.highPassFilterEngaged);
+  if (micPreData.highPassFilterButtonState != newPinState) {
+    Serial.println("MicPreController: High Pass Filter Button Pressed");
+    updateState(newPinState, &micPreData.highPassFilterButtonState, &micPreData.highPassFilterEngaged);
   }
 }
 
