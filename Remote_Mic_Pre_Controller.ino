@@ -6,13 +6,13 @@
 #define phantomPin 3
 #define polarityPin 4
 #define inputZPin 5
-#define mutePin 6
-#define highPassFilterPin 7
+//#define mutePin 6
+#define highPassFilterPin 6
 
 // Encoder
-#define encoder0PinA 2
+#define encoder0PinA 2  // Gain 
 #define encoder0PinB 3
-#define encoder0Btn 4
+#define encoder0Btn 4   // Pad
 
 volatile int encoder0Pos = 0;
 
@@ -28,28 +28,36 @@ void setup() {
   //  pinMode(phantomPin, INPUT);
   //  pinMode(polarityPin, INPUT);
   //  pinMode(inputZPin, INPUT);
-    pinMode(mutePin, INPUT);
   //  pinMode(highPassFilterPin, INPUT);
 
   // Encoder
-  pinMode(encoder0PinA, INPUT_PULLUP);
-  pinMode(encoder0PinB, INPUT_PULLUP);     
-  pinMode(encoder0Btn, INPUT_PULLUP);
-  attachInterrupt(0, doEncoder, CHANGE);
-
-//  micPreController = MicPreController(setDeviceID());
-  micPreController = MicPreController(17);
+  encoderConfig();
+  micPreController = MicPreController(setDeviceID());
+  //  micPreController = MicPreController(17);
   Serial.println("setUp complete!");
 }
 
 
+void buttonConfig() {
+  
+}
+
+
+void encoderConfig() {
+  pinMode(encoder0PinA, INPUT_PULLUP);
+  pinMode(encoder0PinB, INPUT_PULLUP);
+  pinMode(encoder0Btn, INPUT_PULLUP);
+  attachInterrupt(0, doEncoder, CHANGE);
+}
+
+
 char setDeviceID() {
-  //  Serial.print("Setting Device ID:  ");
+  Serial.print("Setting Device ID:  ");
   const int ID1 = A0;
   const int ID2 = A1;
   const int ID3 = A2;
   const int ID4 = A3;
-  const int ID5 = A4;
+  const int ID5 = 5;
 
   pinMode(ID1, INPUT_PULLUP);
   pinMode(ID2, INPUT_PULLUP);
@@ -64,7 +72,7 @@ char setDeviceID() {
   int id5 = !digitalRead(ID5) << 4;
 
   int xorbits = id1 ^ id2 ^ id3 ^ id4 ^ id5;
-  //  Serial.println(xorbits);
+  Serial.println(xorbits);
 }
 
 
@@ -77,12 +85,12 @@ void loop() {
   //  micPreController.updatePhantom(bool(digitalRead(phantomPin)));
   //  micPreController.updatePolarity(bool(digitalRead(polarityPin)));
   //  micPreController.updateInputZ(bool(digitalRead(inputZPin)));
-    micPreController.updateMute(bool(digitalRead(mutePin)));
+  micPreController.updateMute(bool(digitalRead(mutePin)));
   //  micPreController.updateHPF(bool(digitalRead(highPassFilterPin)));
 
 
   // Encoder
-//  micPreController.updatePad(bool(!digitalRead(encoder0Btn)));
+  //  micPreController.updatePad(bool(!digitalRead(encoder0Btn)));
 
   delay(200); //small delay to account for button bounce.
 }
