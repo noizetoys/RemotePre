@@ -1,9 +1,9 @@
 
-#ifndef DataDisplay_h
-#define DataDisplay_h
+#ifndef DATADISPLAY_H
+#define DATADISPLAY_H
 
 #include "MicPreData.h"
-#include <SPI.h>
+//#include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>

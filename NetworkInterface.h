@@ -1,5 +1,5 @@
-#ifndef NetworkInterface_h
-#define NetworkInterface_h
+#ifndef NETWORKINTERFACE_H
+#define NETWORKINTERFACE_H
 
 
 #include <Wire.h>

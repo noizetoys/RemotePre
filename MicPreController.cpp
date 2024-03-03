@@ -3,14 +3,17 @@
 
 
 MicPreController::MicPreController(char id)  {
+  Serial.print("* MicPreController::MicPreController(char id) called!  ID = ");
+  Serial.println(id);
+  
   data = MicPreData();
   dataDisplay = DataDisplay();
-  network = NetworkInterface(id);
+  //  network = NetworkInterface(id);
 
-  /* 
-   *  Required to set all data properties to their 'OFF' state
-   *  Otherwise the properties contain garbage
-   */
+  /*
+      Required to set all data properties to their 'OFF' state
+      Otherwise the properties contain garbage
+  */
   data.resetData();
 }
 
@@ -28,8 +31,8 @@ void MicPreController::updatePad(bool newPinState) {
 
 void MicPreController::updatePhantom(bool newPinState) {
   if (data.phantomButtonState != newPinState) {
-   Serial.println("Phantom Button Pressed");
-   updateState(newPinState, &data.phantomButtonState, &data.phantomEngaged);
+    Serial.println("Phantom Button Pressed");
+    updateState(newPinState, &data.phantomButtonState, &data.phantomEngaged);
   }
 }
 
@@ -61,6 +64,15 @@ void MicPreController::updateHPF(bool newPinState) {
   }
 }
 
+
+/*
+   Pin State (Pressed/Released)
+
+   Function Button Mode (Pressed/Released)
+   Function Button State (On/Off)
+
+   Function State (active/inactive)
+*/
 
 // Private
 void MicPreController::updateState(bool newPinState, bool *buttonMode, bool *state) {

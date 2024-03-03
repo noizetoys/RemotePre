@@ -1,6 +1,9 @@
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+//#include <Wire.h>
+//#include <Adafruit_GFX.h>
+//#include <Adafruit_SSD1306.h>
+#include "GainEncoder.h"
+#include "DataReadout.h"
+#include "DisplayData.h"
 
 /*
    Screen
@@ -26,7 +29,6 @@ volatile int AValue;
 volatile int BValue;
 volatile int rotationStep, newRotationStep, btn;
 
-int muteButtonState;
 
 /*
    Buttons
@@ -36,12 +38,6 @@ int muteButtonState;
 #define inputZButton 10
 #define padButton 11
 #define hpfButton 12
-
-int phantomState;
-int polarityState;
-int inputZState;
-int padState;
-int hpfState;
 
 /*
    ID DIP Switches
@@ -54,13 +50,19 @@ int hpfState;
 */
 
 
+GainEncoder encoder;
+DataReadout dataReadout;
+DisplayData displayData;
 
 void setup() {
   Serial.begin(115200);
 
-  // Display
-  displayConfig();
+  //  encoder = GainEncoder();
+  //    attachInterrupt(0, encoder.readEncoder, CHANGE);
 
+  //  attachInterrupt(0, encoder.readEncoder, CHANGE);
+
+ 
   // Buttons
   buttonConfig();
 
@@ -70,19 +72,12 @@ void setup() {
   // Device ID
   deviceIDConfig();
 
-  // Starting State
-  displayMute();
+
+  displayData = DisplayData();
+
+  dataReadout = DataReadout(&display, &displayData);
 }
 
-
-void displayConfig() {
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println("SSD1306 Allocation Failed!!!");
-    for (;;);
-  }
-
-  delay(2000);
-}
 
 void encoderConfig() {
   pinMode(encoder0PinA, INPUT_PULLUP);
@@ -125,116 +120,6 @@ void deviceIDConfig() {
   int xorbits = id0 ^ id1 ^ id2 ^ id3 ^ id4;
   Serial.println(xorbits);
 }
-/*
-   Text Related
-*/
-void resetText() {
-  display.setTextColor(WHITE);
-  display.setTextSize(2);
-  display.setFont(NULL);
-}
-
-
-void displayPhantom() {
-  resetText();
-  display.setCursor(1, 1);
-
-  if (phantomState == HIGH) {
-    display.println("48v");
-  }
-}
-
-
-void displayPolarity() {
-  resetText();
-
-  if (polarityState == HIGH) {
-    display.setCursor(41, 1);
-    display.println("180");
-  }
-}
-
-
-void displayInputZ() {
-  resetText();
-
-  display.setCursor(92, 1);
-  display.println(inputZState == LOW ? "LOW" : "HI");
-}
-
-
-void displayPad() {
-  resetText();
-
-  if (padState == HIGH) {
-    display.setCursor(92, 26);
-    display.println("PAD");
-  }
-}
-
-
-void displayHPF() {
-  resetText();
-
-  if (hpfState == HIGH) {
-    display.setCursor(92, 50);
-    display.println("HPF");
-  }
-}
-
-
-void displayGain(int gain) {
-  //  resetText();
-  display.setTextSize(3);
-  display.setCursor(1, 35);
-  display.println("+");
-
-  display.setTextSize(5);
-  display.setCursor(20, 28);
-  display.println(gain);
-}
-
-
-void displayAllItems(int gain) {
-  display.clearDisplay();
-  display.invertDisplay(false);
-
-  display.setTextColor(WHITE);
-  display.setTextSize(2);
-  display.setFont(NULL);
-
-  displayPhantom();
-
-  displayPolarity();
-
-  displayInputZ();
-
-  displayPad();
-
-  displayHPF();
-
-  displayGain(gain);
-
-  display.display();
-}
-
-
-void displayMute() {
-  display.clearDisplay();
-  display.invertDisplay(true);
-
-  display.drawRect(0, 0, 128, 16, WHITE);
-
-  display.setTextColor(WHITE);
-  display.setTextSize(5);
-  display.setFont(NULL);
-
-  display.setCursor(7, 23);
-  display.println("MUTE");
-  display.display();
-
-  delay(2000);
-}
 
 
 /*
@@ -273,6 +158,9 @@ void doEncoder() {
     rotationStep = EncoderMax / EncoderStep;
   }
 
+  displayData.gainLevel = rotationStep;
+
+//  dataReadout.updateDisplay();
 }
 
 
@@ -281,40 +169,40 @@ void doEncoder() {
 */
 
 void loop() {
-  muteButtonState = digitalRead(encoder0Btn);
+  displayData.muteButtonState = bool(digitalRead(encoder0Btn));
 
-  phantomState = digitalRead(phantomButton);
-  polarityState = digitalRead(polarityButton);
-  inputZState = digitalRead(inputZButton);
-  padState = digitalRead(padButton);
-  hpfState = digitalRead(hpfButton);
+  displayData.phantomButtonState = bool(digitalRead(phantomButton));
+  displayData.polarityButtonState = bool(digitalRead(polarityButton));
+  displayData.inputZButtonState = bool(digitalRead(inputZButton));
+  displayData.padButtonState = bool(digitalRead(padButton));
+  displayData.highPassFilterButtonState = bool(digitalRead(hpfButton));
 
-  //  Serial.print("Encoder Button State:  ");
-  //  Serial.println(muteButtonState == HIGH ? "HIGH" : "LOW");
 
-  //    Serial.print("Phantom State:  ");
-  //    Serial.println(phantomState == HIGH ? "HIGH" : "LOW");
-  //
-  //  Serial.print("Polarity State:  ");
-  //  Serial.println(polarityState == HIGH ? "HIGH" : "LOW");
-  //
-  //  Serial.print("Input Z State:  ");
-  //  Serial.println(inputZState == HIGH ? "HIGH" : "LOW");
-  //
-  //  Serial.print("Pad State:  ");
-  //  Serial.println(padState == HIGH ? "HIGH" : "LOW");
-  //
-  //  Serial.print("HPF State:  ");
-  //  Serial.println(hpfState == HIGH ? "HIGH" : "LOW");
+//  Serial.print("\nEncoder Button State:  ");
+//  Serial.println(displayData.muteButtonState == HIGH ? "HIGH" : "LOW");
+//
+//  Serial.print("Phantom State:  ");
+//  Serial.println(displayData.phantomButtonState == HIGH ? "HIGH" : "LOW");
+//
+//  Serial.print("Polarity State:  ");
+//  Serial.println(displayData.polarityButtonState == HIGH ? "HIGH" : "LOW");
+//
+//  Serial.print("Input Z State:  ");
+//  Serial.println(displayData.inputZButtonState == HIGH ? "HIGH" : "LOW");
+//
+//  Serial.print("Pad State:  ");
+//  Serial.println(displayData.padButtonState == HIGH ? "HIGH" : "LOW");
+//
+//  Serial.print("HPF State:  ");
+//  Serial.println(displayData.highPassFilterButtonState == HIGH ? "HIGH" : "LOW");
 
-  if (digitalRead(encoder0Btn) == LOW) {
+  if (displayData.muteButtonState == LOW) {
     //  if (digitalRead(MUTE_BUTTON) == HIGH || digitalRead(encoder0Btn) == HIGH) {
-    displayMute();
+//    displayMute();
     Serial.println("MUTE should be Shown!");
   }
-  else {
-    displayAllItems((rotationStep * 3) + 24);
-  }
+
+  dataReadout.updateDisplay();
 
   delay(250);
 }

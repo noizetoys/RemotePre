@@ -1,16 +1,9 @@
 
-#ifndef MicPreData_h
-#define MicPreData_h
+#ifndef MICPREDATA_H
+#define MICPREDATA_H
 
+#include <HardwareSerial.h>
 
-/*
-   Pin State (Pressed/Released)
-
-   Function Button Mode (Pressed/Released)
-   Function Button State (On/Off)
-
-   Function State (active/inactive)
-*/
 typedef struct MicPreData {
   unsigned int gainLevel;
 
@@ -34,10 +27,14 @@ typedef struct MicPreData {
   MicPreData() { }
 
   MicPreData(int id) {
+    Serial.println("* MicPreData() called.");
+
     deviceID = id;
   }
 
   void resetData() {
+    Serial.println("MicPreData.resetData() called.");
+
     padEngaged = false;
     phantomEngaged = false;
     polarityInverted = false;
@@ -51,6 +48,26 @@ typedef struct MicPreData {
     inputZButtonState = false;
     muteButtonState = false;
     highPassFilterButtonState = false;
+  }
+
+  MicPreData copy() {
+    Serial.println("MicPreData.copy() called.");
+
+    MicPreData data = MicPreData();
+
+    data.padEngaged = padEngaged;
+    data.phantomEngaged = phantomEngaged;
+    data.polarityInverted = polarityInverted;
+    data.inputZIsHigh = inputZIsHigh;
+    data.muteEngaged = muteEngaged;
+    data.highPassFilterEngaged = highPassFilterEngaged;
+
+    data.padButtonState = padButtonState;
+    data.phantomButtonState = phantomButtonState;
+    data.polarityButtonState = polarityButtonState;
+    data.inputZButtonState = inputZButtonState;
+    data.muteButtonState = muteButtonState;
+    data.highPassFilterButtonState = highPassFilterButtonState;
   }
 
 } MicPreData;

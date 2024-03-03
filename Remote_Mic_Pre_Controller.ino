@@ -2,48 +2,75 @@
 #include "MicPreController.h"
 
 // Buttons
-#define padPin 2
-#define phantomPin 3
-#define polarityPin 4
-#define inputZPin 5
-//#define mutePin 6
-#define highPassFilterPin 6
+#define phantomButton 8
+#define polarityButton 9
+#define inputZButton 10
+#define padButton 11
+#define hpfButton 12
 
 // Encoder
 #define encoder0PinA 2  // Gain 
 #define encoder0PinB 3
 #define encoder0Btn 4   // Pad
 
+#define EncoderMin 1
+#define EncoderMax 60
+#define EncoderStep 5
+
 volatile int encoder0Pos = 0;
+volatile int AValue;
+volatile int BValue;
+volatile int rotationStep, newRotationStep, btn;
+
+int muteButtonState;
 
 
 MicPreController micPreController;
 
+/*
+   For Debug
+*/
+bool showEncoderDebug = true;
+bool showButtonDebug = true;
+bool showDeviceIDDebug = true;
+//bool showEncoderDebug = true;
+
+
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("SetUp Started....");
 
-  // Buttons
-  //  pinMode(padPin, INPUT);
-  //  pinMode(phantomPin, INPUT);
-  //  pinMode(polarityPin, INPUT);
-  //  pinMode(inputZPin, INPUT);
-  //  pinMode(highPassFilterPin, INPUT);
-
-  // Encoder
-  encoderConfig();
   micPreController = MicPreController(setDeviceID());
+
+  encoderConfig();
+
+  buttonConfig();
+
+
   //  micPreController = MicPreController(17);
   Serial.println("setUp complete!");
 }
 
 
 void buttonConfig() {
-  
+  if (showButtonDebug) {
+    Serial.println("Configuring Buttons");
+  }
+
+  pinMode(phantomButton, INPUT);
+  pinMode(polarityButton, INPUT);
+  pinMode(inputZButton, INPUT);
+  pinMode(padButton, INPUT);
+  pinMode(hpfButton, INPUT);
 }
 
 
 void encoderConfig() {
+  if (showEncoderDebug) {
+    Serial.println("Configuring Buttons");
+  }
+
   pinMode(encoder0PinA, INPUT_PULLUP);
   pinMode(encoder0PinB, INPUT_PULLUP);
   pinMode(encoder0Btn, INPUT_PULLUP);
@@ -52,7 +79,6 @@ void encoderConfig() {
 
 
 char setDeviceID() {
-  Serial.print("Setting Device ID:  ");
   const int ID1 = A0;
   const int ID2 = A1;
   const int ID3 = A2;
@@ -71,22 +97,25 @@ char setDeviceID() {
   int id4 = !digitalRead(ID4) << 3;
   int id5 = !digitalRead(ID5) << 4;
 
-  int xorbits = id1 ^ id2 ^ id3 ^ id4 ^ id5;
-  Serial.println(xorbits);
+  int deviceID = id1 ^ id2 ^ id3 ^ id4 ^ id5;
+
+  if (showDeviceIDDebug) {
+    Serial.print("Setting Device ID:  ");
+    Serial.println(deviceID);
+  }
+
+  return deviceID;
 }
 
 
-volatile int rotationStep, newRotationStep, btn;
-
-
 void loop() {
-  //  micPreController.updatePad(bool(digitalRead(padPin)));
+  micPreController.updateMute(bool(digitalRead(encoder0Btn)));
 
-  //  micPreController.updatePhantom(bool(digitalRead(phantomPin)));
-  //  micPreController.updatePolarity(bool(digitalRead(polarityPin)));
-  //  micPreController.updateInputZ(bool(digitalRead(inputZPin)));
-  micPreController.updateMute(bool(digitalRead(mutePin)));
-  //  micPreController.updateHPF(bool(digitalRead(highPassFilterPin)));
+  micPreController.updatePhantom(bool(digitalRead(phantomButton)));
+  micPreController.updatePolarity(bool(digitalRead(polarityButton)));
+  micPreController.updateInputZ(bool(digitalRead(inputZButton)));
+  micPreController.updatePad(bool(digitalRead(padButton)));
+  micPreController.updateHPF(bool(digitalRead(hpfButton)));
 
 
   // Encoder
@@ -95,13 +124,6 @@ void loop() {
   delay(200); //small delay to account for button bounce.
 }
 
-
-volatile int AValue;
-volatile int BValue;
-
-#define EncoderMin 1
-#define EncoderMax 60
-#define EncoderStep 5
 
 
 void doEncoder() {
@@ -143,5 +165,4 @@ void doEncoder() {
     encoder0Pos = EncoderMax;
     rotationStep = EncoderMax / EncoderStep;
   }
-
 }

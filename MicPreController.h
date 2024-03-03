@@ -1,6 +1,6 @@
 
-#ifndef MicPreController_h
-#define MicPreController_h
+#ifndef MICPRECONTROLLER_H
+#define MICPRECONTROLLER_H
 
 #include <Arduino.h>
 #include "DataDisplay.h"
@@ -17,14 +17,16 @@ class MicPreController {
 
   public:
     void updateGainLevel(int value);
+
+    void updateMute(bool newPinState);
+
     void updatePad(bool newPinState);
     void updatePhantom(bool newPinState);
     void updatePolarity(bool newPinState);
     void updateInputZ(bool newPinState);
-    void updateMute(bool newPinState);
     void updateHPF(bool newPinState);
 
-  // Constructors
+    // Constructors
     MicPreController() { }
 
     // Non-Default
