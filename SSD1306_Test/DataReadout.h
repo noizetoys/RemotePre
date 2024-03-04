@@ -4,7 +4,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include "DisplayData.h"
+#include "MicPreData.h"
 
 
 class DataReadout {
@@ -22,13 +22,13 @@ class DataReadout {
     void displayHPF();
     void displayGain();
 
-    DisplayData *displayData;
+    MicPreData *micPreData;
 
   public:
     void updateDisplay();
 
     DataReadout() {}
-    DataReadout(Adafruit_SSD1306 *readout, DisplayData *data);
+    DataReadout(Adafruit_SSD1306 *readout, MicPreData *data);
 };
 
 #endif

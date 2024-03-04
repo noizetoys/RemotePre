@@ -3,15 +3,18 @@
 /*
  * Constructor
  */
-DataReadout::DataReadout(Adafruit_SSD1306 *readout, DisplayData *data) {
+DataReadout::DataReadout(Adafruit_SSD1306 *readout, MicPreData *data) {
   Serial.println("DataReadout init called!");
 
   display = readout;
-  displayData = data;
+  micPreData = data;
 
   if (!display->begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println("SSD1306 Allocation Failed!!!");
+    Serial.println("XXX SSD1306 Allocation Failed XXX");
     for (;;);
+  }
+  else {
+    Serial.println("!!! SSD1306 Allocation Succeded!!!");
   }
 
   displayAllItems();
@@ -22,12 +25,12 @@ DataReadout::DataReadout(Adafruit_SSD1306 *readout, DisplayData *data) {
 
 void DataReadout::updateDisplay() {
 
-  //  if (displayData->muteButtonState == true) {
-  //    displayMute();
-  //  }
-  //  else {
+    if (micPreData->muteButtonState == false) {
+      displayMute();
+    }
+    else {
   displayAllItems();
-  //  }
+    }
 }
 
 
@@ -46,7 +49,7 @@ void DataReadout::displayPhantom() {
   resetText();
   display->setCursor(1, 1);
 
-  if (displayData->phantomButtonState == HIGH) {
+  if (micPreData->phantomButtonState == HIGH) {
     display->println("48");
   }
 }
@@ -55,7 +58,7 @@ void DataReadout::displayPhantom() {
 void DataReadout::displayPolarity() {
   resetText();
 
-  if (displayData->polarityButtonState == HIGH) {
+  if (micPreData->polarityButtonState == HIGH) {
     display->setCursor(41, 1);
     display->println("180");
   }
@@ -66,14 +69,14 @@ void DataReadout::displayInputZ() {
   resetText();
 
   display->setCursor(92, 1);
-  display->println(displayData->inputZButtonState == LOW ? "LOW" : "HI");
+  display->println(micPreData->inputZButtonState == LOW ? "LOW" : "HI");
 }
 
 
 void DataReadout::displayPad() {
   resetText();
 
-  if (displayData->padButtonState == HIGH) {
+  if (micPreData->padButtonState == HIGH) {
     display->setCursor(92, 26);
     display->println("PAD");
   }
@@ -83,7 +86,7 @@ void DataReadout::displayPad() {
 void DataReadout::displayHPF() {
   resetText();
 
-  if (displayData->highPassFilterButtonState == HIGH) {
+  if (micPreData->highPassFilterButtonState == HIGH) {
     display->setCursor(92, 50);
     display->println("HPF");
   }
@@ -97,7 +100,7 @@ void DataReadout::displayGain() {
 
   display->setTextSize(5);
   display->setCursor(20, 28);
-  display->println(displayData->gainLevel);
+  display->println(micPreData->gainLevel);
 }
 
 
