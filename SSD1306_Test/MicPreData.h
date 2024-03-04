@@ -29,7 +29,7 @@ typedef struct MicPreData {
 
   MicPreData(int id) {
     Serial.print(F("* MicPreData(int id) called!  ID = "));
-    Serial.println(id );
+    Serial.println(id);
 
     deviceID = id;
     gainLevel = 1;

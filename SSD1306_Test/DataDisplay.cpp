@@ -1,8 +1,9 @@
+
 #include "DataDisplay.h"
 
-/*
-   Constructor
-*/
+
+// Constructor
+
 DataDisplay::DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data) {
   Serial.print(F("\nDataDisplay init called!  ID = "));
   Serial.println(data->deviceID);
@@ -28,8 +29,9 @@ DataDisplay::DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data) {
 }
 
 
-void DataDisplay::updateDisplay() {
+// Public
 
+void DataDisplay::updateDisplay() {
   if (micPreData->muteButtonState == false) {
     displayMute();
   }
@@ -39,9 +41,33 @@ void DataDisplay::updateDisplay() {
 }
 
 
-/*
-   Private
-*/
+// Display Device ID
+
+void DataDisplay::displayDeviceID(int id) {
+  display->clearDisplay();
+  display->invertDisplay(false);
+
+  display->setTextColor(WHITE);
+  display->setTextSize(5);
+  display->setFont(NULL);
+
+  if (id < 10) {
+    display->setCursor(36, 23);
+  }
+  else {
+    display->setCursor(20, 23);
+  }
+
+  display->print("#");
+  display->println(id);
+
+  display->display();
+
+  delay(2000);
+}
+
+
+// Private
 
 void DataDisplay::resetText() {
   display->setTextColor(WHITE);
@@ -54,7 +80,7 @@ void DataDisplay::displayPhantom() {
   resetText();
   display->setCursor(1, 1);
 
-  if (micPreData->phantomButtonState == HIGH) {
+  if (micPreData->phantomEngaged == true) {
     display->println("48");
   }
 }
@@ -63,7 +89,7 @@ void DataDisplay::displayPhantom() {
 void DataDisplay::displayPolarity() {
   resetText();
 
-  if (micPreData->polarityButtonState == HIGH) {
+  if (micPreData->polarityInverted == true) {
     display->setCursor(41, 1);
     display->println("180");
   }
@@ -74,14 +100,14 @@ void DataDisplay::displayInputZ() {
   resetText();
 
   display->setCursor(92, 1);
-  display->println(micPreData->inputZButtonState == LOW ? "LOW" : "HI");
+  display->println(micPreData->inputZIsHigh == true ? "HI" : "LOW");
 }
 
 
 void DataDisplay::displayPad() {
   resetText();
 
-  if (micPreData->padButtonState == HIGH) {
+  if (micPreData->padEngaged == true) {
     display->setCursor(92, 26);
     display->println("PAD");
   }
@@ -91,7 +117,7 @@ void DataDisplay::displayPad() {
 void DataDisplay::displayHPF() {
   resetText();
 
-  if (micPreData->highPassFilterButtonState == HIGH) {
+  if (micPreData->highPassFilterEngaged == true) {
     display->setCursor(92, 50);
     display->println("HPF");
   }
@@ -108,6 +134,9 @@ void DataDisplay::displayGain() {
   display->println(micPreData->gainLevel);
 }
 
+
+
+// Display All Valid Control Values
 
 void DataDisplay::displayAllItems() {
   display->clearDisplay();
@@ -132,6 +161,8 @@ void DataDisplay::displayAllItems() {
   display->display();
 }
 
+
+// Display Mute
 
 void DataDisplay::displayMute() {
   display->clearDisplay();

@@ -26,6 +26,7 @@ class DataDisplay {
 
   public:
     void updateDisplay();
+    void displayDeviceID(int id);
 
     DataDisplay() {}
     DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data);
