@@ -4,18 +4,22 @@
    Constructor
 */
 DataDisplay::DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data) {
-  Serial.print("DataDisplay init called!  ID = ");
+  Serial.print(F("\nDataDisplay init called!  ID = "));
   Serial.println(data->deviceID);
 
   display = readout;
   micPreData = data;
 
   if (!display->begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println("XXX SSD1306 Allocation Failed XXX");
+    Serial.println(F("\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"));
+    Serial.println(F("XXX SSD1306 Allocation Failed XXX"));
+    Serial.println(F("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"));
     for (;;);
   }
   else {
-    Serial.println("!!! SSD1306 Allocation Succeded!!!");
+    Serial.println(F("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"));
+    Serial.println(F("!!! SSD1306 Allocation Succeded!!!"));
+    Serial.println(F("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"));
   }
 
   displayAllItems();

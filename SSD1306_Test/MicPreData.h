@@ -28,8 +28,8 @@ typedef struct MicPreData {
   MicPreData() { }
 
   MicPreData(int id) {
-    Serial.print("* MicPreData(int id) called!  ID = ");
-    Serial.println(id);
+    Serial.print(F("* MicPreData(int id) called!  ID = "));
+    Serial.println(id );
 
     deviceID = id;
     gainLevel = 1;
@@ -50,47 +50,51 @@ typedef struct MicPreData {
   }
 
   void serialPrintData() {
-    //  if (muteButtonState == LOW) {
-    //    //  if (digitalRead(MUTE_BUTTON) == HIGH || digitalRead(encoder0Btn) == HIGH) {
-    //    Serial.println("MUTE should be Shown!");
-    //  }
+    // ID
+    Serial.print(F("\n\nDevice ID:  "));
+    Serial.println(deviceID);
+
+    // Gain Level
+    Serial.print(F("Gain Level:  "));
+    Serial.println(gainLevel);
 
     // Mute
-    Serial.print("\nEncoder Button State:  ");
-    Serial.println(muteButtonState == HIGH ? "HIGH" : "LOW");
-    Serial.print("Mute Engaged:  ");
-    Serial.println(muteEngaged == HIGH ? "YES" : "NO");
+    Serial.print(F("Encoder Button State:  "));
+    Serial.print(muteButtonState == HIGH ? "HIGH" : "LOW");
+    Serial.print(F(", Mute Engaged:  "));
+    Serial.println(muteEngaged == true ? "YES" : "NO");
 
     // Phantom
-    Serial.print("Phantom State:  ");
-    Serial.println(phantomButtonState == HIGH ? "HIGH" : "LOW");
-    Serial.print("Phantom Engaged:  ");
-    Serial.println(phantomEngaged == HIGH ? "YES" : "NO");
+    Serial.print(F("Phantom State:  "));
+    Serial.print(phantomButtonState == HIGH ? "HIGH" : "LOW");
+    Serial.print(F(", Phantom Engaged:  "));
+    Serial.println(phantomEngaged == true ? "YES" : "NO");
 
     // Polarity
-    Serial.print("Polarity State:  ");
-    Serial.println(polarityButtonState == HIGH ? "HIGH" : "LOW");
-    Serial.print("Polarity Inverted:  ");
-    Serial.println(polarityInverted == HIGH ? "YES" : "NO");
+    Serial.print(F("Polarity State:  "));
+    Serial.print(polarityButtonState == HIGH ? "HIGH" : "LOW");
+    Serial.print(F(", Polarity Inverted:  "));
+    Serial.println(polarityInverted == true ? "YES" : "NO");
 
     // Input Z
-    Serial.print("Input Z State:  ");
-    Serial.println(inputZButtonState == HIGH ? "HIGH" : "LOW");
-    Serial.print("Mute Engaged:  ");
-    Serial.println(inputZIsHigh == HIGH ? "YES" : "NO");
+    Serial.print(F("Input Z State:  "));
+    Serial.print(inputZButtonState == HIGH ? "HIGH" : "LOW");
+    Serial.print(F(", Mute Engaged:  "));
+    Serial.println(inputZIsHigh == true ? "YES" : "NO");
 
     // Pad
-    Serial.print("Pad State:  ");
-    Serial.println(padButtonState == HIGH ? "HIGH" : "LOW");
-    Serial.print("Pad Engaged:  ");
-    Serial.println(padEngaged == HIGH ? "YES" : "NO");
+    Serial.print(F("Pad State:  "));
+    Serial.print(padButtonState == HIGH ? "HIGH" : "LOW");
+    Serial.print(F(", Pad Engaged:  "));
+    Serial.println(padEngaged == true ? "YES" : "NO");
 
     // High Pass Filter
-    Serial.print("HPF State:  ");
-    Serial.println(highPassFilterButtonState == HIGH ? "HIGH" : "LOW");
-    Serial.print("HPF Engaged:  ");
-    Serial.println(highPassFilterEngaged == HIGH ? "YES" : "NO");
+    Serial.print(F("HPF State:  "));
+    Serial.print(highPassFilterButtonState == HIGH ? "HIGH" : "LOW");
+    Serial.print(F(", HPF Engaged:  "));
+    Serial.println(highPassFilterEngaged == true ? "YES" : "NO");
 
+    Serial.println(F(""));
   }
 
   //  MicPreData createFromData(MicPreData data) {
