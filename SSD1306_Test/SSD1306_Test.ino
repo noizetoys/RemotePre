@@ -143,40 +143,7 @@ int deviceID() {
 void readEncoder() {
   Serial.println("readEncoder() called");
 
-  //  AValue = digitalRead(encoder0PinA);
-  //  BValue = digitalRead(encoder0PinB);
-
-  //  micPreControl.updateGainLevel(digitalRead(encoder0PinA), digitalRead(encoder0PinB));
-
-  //  if (encoder0Pos >= EncoderMin && encoder0Pos <= EncoderMax) {
-  //    AValue == BValue ? encoder0Pos++ : encoder0Pos--;
-  //  }
-  //
-  //  //  Serial.print("doEncoder:  Current Encoder Value = ");
-  //  //  Serial.println(encoder0Pos);
-  //
-  //  newRotationStep = (encoder0Pos / EncoderStep);
-  //
-  //  if (newRotationStep != rotationStep && encoder0Pos >= EncoderStep) {
-  //    rotationStep = newRotationStep;
-  //    Serial.print("\nRotationStep = ");
-  //    Serial.println(rotationStep);
-  //  }
-  //
-  //  if (encoder0Pos < EncoderMin) {
-  //    Serial.print(EncoderMin);
-  //    Serial.println(" Hit, No Change");
-  //    encoder0Pos = EncoderMin;
-  //    rotationStep = EncoderMin;
-  //  }
-  //  else if (encoder0Pos > EncoderMax) {
-  //    Serial.print(EncoderMax);
-  //    Serial.println(" Hit, No Change");
-  //    encoder0Pos = EncoderMax;
-  //    rotationStep = EncoderMax / EncoderStep;
-  //  }
-  //
-  //  micPreData.gainLevel = rotationStep;
+   micPreControl.updateGainLevel(digitalRead(encoder0PinA), digitalRead(encoder0PinB));
 
   //    dataReadout.updateDisplay();
 }
