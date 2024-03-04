@@ -1,5 +1,5 @@
-#ifndef DATAREADOUT_H
-#define DATAREADOUT_H
+#ifndef DATADISPLAY_H
+#define DATADISPLAY_H
 
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -7,7 +7,7 @@
 #include "MicPreData.h"
 
 
-class DataReadout {
+class DataDisplay {
   private:
     Adafruit_SSD1306 *display;
 
@@ -27,8 +27,8 @@ class DataReadout {
   public:
     void updateDisplay();
 
-    DataReadout() {}
-    DataReadout(Adafruit_SSD1306 *readout, MicPreData *data);
+    DataDisplay() {}
+    DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data);
 };
 
 #endif

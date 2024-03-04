@@ -1,10 +1,10 @@
-#include "DataReadout.h"
+#include "DataDisplay.h"
 
 /*
- * Constructor
- */
-DataReadout::DataReadout(Adafruit_SSD1306 *readout, MicPreData *data) {
-  Serial.println("DataReadout init called!");
+   Constructor
+*/
+DataDisplay::DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data) {
+  Serial.println("DataDisplay init called!");
 
   display = readout;
   micPreData = data;
@@ -23,29 +23,29 @@ DataReadout::DataReadout(Adafruit_SSD1306 *readout, MicPreData *data) {
 }
 
 
-void DataReadout::updateDisplay() {
+void DataDisplay::updateDisplay() {
 
-    if (micPreData->muteButtonState == false) {
-      displayMute();
-    }
-    else {
-  displayAllItems();
-    }
+  if (micPreData->muteButtonState == false) {
+    displayMute();
+  }
+  else {
+    displayAllItems();
+  }
 }
 
 
 /*
- * Private
- */
- 
-void DataReadout::resetText() {
+   Private
+*/
+
+void DataDisplay::resetText() {
   display->setTextColor(WHITE);
   display->setTextSize(2);
   display->setFont(NULL);
 }
 
 
-void DataReadout::displayPhantom() {
+void DataDisplay::displayPhantom() {
   resetText();
   display->setCursor(1, 1);
 
@@ -55,7 +55,7 @@ void DataReadout::displayPhantom() {
 }
 
 
-void DataReadout::displayPolarity() {
+void DataDisplay::displayPolarity() {
   resetText();
 
   if (micPreData->polarityButtonState == HIGH) {
@@ -65,7 +65,7 @@ void DataReadout::displayPolarity() {
 }
 
 
-void DataReadout::displayInputZ() {
+void DataDisplay::displayInputZ() {
   resetText();
 
   display->setCursor(92, 1);
@@ -73,7 +73,7 @@ void DataReadout::displayInputZ() {
 }
 
 
-void DataReadout::displayPad() {
+void DataDisplay::displayPad() {
   resetText();
 
   if (micPreData->padButtonState == HIGH) {
@@ -83,7 +83,7 @@ void DataReadout::displayPad() {
 }
 
 
-void DataReadout::displayHPF() {
+void DataDisplay::displayHPF() {
   resetText();
 
   if (micPreData->highPassFilterButtonState == HIGH) {
@@ -93,7 +93,7 @@ void DataReadout::displayHPF() {
 }
 
 
-void DataReadout::displayGain() {    
+void DataDisplay::displayGain() {
   display->setTextSize(3);
   display->setCursor(1, 35);
   display->println("+");
@@ -104,7 +104,7 @@ void DataReadout::displayGain() {
 }
 
 
-void DataReadout::displayAllItems() {
+void DataDisplay::displayAllItems() {
   display->clearDisplay();
   display->invertDisplay(false);
 
@@ -128,7 +128,7 @@ void DataReadout::displayAllItems() {
 }
 
 
-void DataReadout::displayMute() {
+void DataDisplay::displayMute() {
   display->clearDisplay();
   display->invertDisplay(true);
 

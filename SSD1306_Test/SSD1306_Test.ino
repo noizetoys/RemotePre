@@ -69,10 +69,6 @@ void setup() {
   // Encoder
   encoderConfig();
 
-  // Device ID
-//  deviceIDConfig();
-
-
   micPreData = MicPreData(deviceID());
 
   dataReadout = DataReadout(&display, &micPreData);
