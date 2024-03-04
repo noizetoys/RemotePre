@@ -10,13 +10,14 @@ DataDisplay::DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data) {
   //
   display = readout;
   micPreData = data;
-//  gainValues = { 25, 29, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60 };
+  //  gainValues = { 25, 29, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60 };
 
   if (!display->begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"));
     Serial.println(F("XXX SSD1306 Allocation Failed XXX"));
     Serial.println(F("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"));
-    for (;;);
+    for (;;)
+      ;
   }
   //  else {
   //    Serial.println(F("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"));
@@ -35,8 +36,7 @@ DataDisplay::DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data) {
 void DataDisplay::updateDisplay() {
   if (micPreData->muteButtonState == false) {
     displayMute();
-  }
-  else {
+  } else {
     displayAllItems();
   }
 }
@@ -54,8 +54,7 @@ void DataDisplay::displayDeviceID(int id) {
 
   if (id < 10) {
     display->setCursor(36, 23);
-  }
-  else {
+  } else {
     display->setCursor(20, 23);
   }
 
@@ -82,7 +81,7 @@ void DataDisplay::displayPhantom() {
   display->setCursor(1, 1);
 
   if (micPreData->phantomEngaged == true) {
-    display->println("48");
+    display->println("48v");
   }
 }
 
@@ -91,8 +90,14 @@ void DataDisplay::displayPolarity() {
   resetText();
 
   if (micPreData->polarityInverted == true) {
-    display->setCursor(41, 1);
-    display->println("180");
+    display->drawCircle(63, 8, 6, WHITE);
+    display->drawCircle(63, 8, 7, WHITE);
+    display->drawLine(54, 15, 70, 0, WHITE);
+    display->drawLine(55, 15, 71, 0, WHITE);
+    display->drawLine(56, 15, 72, 0, WHITE);
+
+    // display->setCursor(41, 1);
+    // display->println("180");
   }
 }
 
@@ -101,7 +106,7 @@ void DataDisplay::displayInputZ() {
   resetText();
 
   display->setCursor(92, 1);
-  display->println(micPreData->inputZIsHigh == true ? "HI" : "LOW");
+  display->println(micPreData->inputZIsHigh == true ? "HiZ" : "LoZ");
 }
 
 
@@ -110,7 +115,8 @@ void DataDisplay::displayPad() {
 
   if (micPreData->padEngaged == true) {
     display->setCursor(92, 26);
-    display->println("PAD");
+    // display->println("Pad");
+    display->println("-20");
   }
 }
 
@@ -119,8 +125,11 @@ void DataDisplay::displayHPF() {
   resetText();
 
   if (micPreData->highPassFilterEngaged == true) {
-    display->setCursor(92, 50);
-    display->println("HPF");
+    display->drawLine(92, 64, 100, 52, WHITE);
+    display->drawFastHLine(100, 52, 27, WHITE);
+
+    // display->setCursor(92, 50);
+    // display->println("HPF");
   }
 }
 
