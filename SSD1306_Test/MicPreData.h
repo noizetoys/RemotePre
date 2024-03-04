@@ -28,11 +28,11 @@ typedef struct MicPreData {
   MicPreData() { }
 
   MicPreData(int id) {
-    Serial.print(F("* MicPreData(int id) called!  ID = "));
-    Serial.println(id);
+//    Serial.print(F("* MicPreData(int id) called!  ID = "));
+//    Serial.println(id);
 
     deviceID = id;
-    gainLevel = 1;
+    gainLevel = 0;
 
     padEngaged = false;
     phantomEngaged = false;

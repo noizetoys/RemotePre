@@ -5,11 +5,12 @@
 // Constructor
 
 DataDisplay::DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data) {
-  Serial.print(F("\nDataDisplay init called!  ID = "));
-  Serial.println(data->deviceID);
-
+  //  Serial.print(F("\nDataDisplay init called!  ID = "));
+  //  Serial.println(data->deviceID);
+  //
   display = readout;
   micPreData = data;
+//  gainValues = { 25, 29, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60 };
 
   if (!display->begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     Serial.println(F("\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"));
@@ -17,11 +18,11 @@ DataDisplay::DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data) {
     Serial.println(F("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"));
     for (;;);
   }
-  else {
-    Serial.println(F("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"));
-    Serial.println(F("!!! SSD1306 Allocation Succeded!!!"));
-    Serial.println(F("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"));
-  }
+  //  else {
+  //    Serial.println(F("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"));
+  //    Serial.println(F("!!! SSD1306 Allocation Succeded!!!"));
+  //    Serial.println(F("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"));
+  //  }
 
   displayAllItems();
 
@@ -131,7 +132,7 @@ void DataDisplay::displayGain() {
 
   display->setTextSize(5);
   display->setCursor(20, 28);
-  display->println(micPreData->gainLevel);
+  display->println(gainValues[micPreData->gainLevel]);
 }
 
 

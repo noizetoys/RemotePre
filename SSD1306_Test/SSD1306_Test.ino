@@ -96,7 +96,6 @@ int deviceID() {
 // Encoder
 
 void doEncoder() {
-//  Serial.println(F("\n## doEncoder called"));
   micPreStateProcessor.updateGainLevel(digitalRead(encoderPinA), digitalRead(encoderPinB));
 }
 

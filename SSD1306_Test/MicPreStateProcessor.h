@@ -12,7 +12,7 @@ class MicPreStateProcessor {
     //    NetworkInterface network;
 
     int EncoderMin = 1;
-    int EncoderMax = 120;
+    int EncoderMax = (8 * 12);
     int EncoderStep = 8;
 
     volatile int encoder0Pos = 0;

@@ -9,9 +9,7 @@ MicPreStateProcessor::MicPreStateProcessor(MicPreData *data)  {
 }
 
 
-/*
-   Public
-*/
+// Public
 
 void MicPreStateProcessor::updateGainLevel(int AValue, int BValue) {
 //  Serial.print(F("~~ MicPreControl: updateGainLevel() called!"));
@@ -30,26 +28,26 @@ void MicPreStateProcessor::updateGainLevel(int AValue, int BValue) {
 
   if (newRotationStep != rotationStep && encoder0Pos >= EncoderStep) {
     rotationStep = newRotationStep;
-    Serial.print(F("\nRotationStep = "));
-    Serial.println(rotationStep);
+//    Serial.print(F("\nRotationStep = "));
+//    Serial.println(rotationStep);
   }
 
   if (encoder0Pos < EncoderMin) {
-    Serial.print(EncoderMin);
-    Serial.println(F(" Hit, No Change"));
+//    Serial.print(EncoderMin);
+//    Serial.println(F(" Hit, No Change"));
     encoder0Pos = EncoderMin;
     rotationStep = EncoderMin;
   }
   else if (encoder0Pos > EncoderMax) {
-    Serial.print(EncoderMax);
-    Serial.println(F(" Hit, No Change"));
+//    Serial.print(EncoderMax);
+//    Serial.println(F(" Hit, No Change"));
     encoder0Pos = EncoderMax;
     rotationStep = EncoderMax / EncoderStep;
   }
 
   if (micPreData->gainLevel != rotationStep) {
-    Serial.print(F("Gain Level Changed:  "));
-    Serial.println(rotationStep);
+//    Serial.print(F("Gain Level Changed:  "));
+//    Serial.println(rotationStep);
     micPreData->gainLevel = rotationStep;
   }
 }
@@ -89,7 +87,11 @@ void MicPreStateProcessor::updateInputZ(bool newPinState) {
 
 void MicPreStateProcessor::updateMute(bool newPinState) {
   if (micPreData->muteButtonState != newPinState) {
-    Serial.println(F("MicPreControl: Mute Button Pressed"));
+    Serial.println(F("\nMicPreControl: Mute Button Pressed"));
+    Serial.print(F("muteButtonState = "));
+    Serial.print(micPreData->muteButtonState);
+    Serial.print(F(", newPinState = "));
+    Serial.println(newPinState);
     updateState(newPinState, &micPreData->muteButtonState, &micPreData->muteEngaged);
   }
 }

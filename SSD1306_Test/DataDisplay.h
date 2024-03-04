@@ -24,6 +24,9 @@ class DataDisplay {
 
     MicPreData *micPreData;
 
+    int gainValues[12] = { 25, 29, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60 };
+
+
   public:
     void updateDisplay();
     void displayDeviceID(int id);
