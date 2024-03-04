@@ -2,7 +2,7 @@
 //#include <Adafruit_GFX.h>
 //#include <Adafruit_SSD1306.h>
 #include "GainEncoder.h"
-#include "DataReadout.h"
+#include "DataDisplay.h"
 #include "MicPreData.h"
 
 /*
@@ -50,41 +50,57 @@ volatile int rotationStep, newRotationStep, btn;
 */
 
 
-GainEncoder encoder;
-DataReadout dataReadout;
+//GainEncoder encoder;
+DataDisplay dataDisplay;
 MicPreData micPreData;
 
 void setup() {
   Serial.begin(115200);
 
+  Serial.println("\n\n--> setup called <--");
+
+  pinMode(encoder0PinA, INPUT_PULLUP);
+  pinMode(encoder0PinB, INPUT_PULLUP);
+  pinMode(encoder0Btn, INPUT_PULLUP);
+  attachInterrupt(0, doEncoder, CHANGE);
+
   //  encoder = GainEncoder();
   //    attachInterrupt(0, encoder.readEncoder, CHANGE);
 
-  //  attachInterrupt(0, encoder.readEncoder, CHANGE);
+//  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+//    Serial.println("XXX SSD1306 Allocation Failed XXX");
+//    for (;;);
+//  }
+//  else {
+//    Serial.println("!!! SSD1306 Allocation Succeded!!!");
+//  }
 
- 
+  micPreData = MicPreData(deviceID());
+
+  dataDisplay = DataDisplay(&display, &micPreData);
+
   // Buttons
   buttonConfig();
 
   // Encoder
-  encoderConfig();
+//    encoderConfig();
 
-  micPreData = MicPreData(deviceID());
 
-  dataReadout = DataReadout(&display, &micPreData);
 }
 
 
 void encoderConfig() {
-  pinMode(encoder0PinA, INPUT_PULLUP);
-  pinMode(encoder0PinB, INPUT_PULLUP);
-  pinMode(encoder0Btn, INPUT_PULLUP);
-
-  attachInterrupt(0, doEncoder, CHANGE);
+  Serial.println("--> encoderConfig called");
+//  pinMode(encoder0PinA, INPUT_PULLUP);
+//  pinMode(encoder0PinB, INPUT_PULLUP);
+//  pinMode(encoder0Btn, INPUT_PULLUP);
+//
+//  attachInterrupt(0, doEncoder, CHANGE);
 }
 
 
 void buttonConfig() {
+  Serial.println("--> buttonConfig called");
   pinMode(phantomButton, INPUT);
   pinMode(polarityButton, INPUT);
   pinMode(inputZButton, INPUT);
@@ -94,7 +110,7 @@ void buttonConfig() {
 
 
 int deviceID() {
-  Serial.print("Setting Device ID:  ");
+  Serial.print("--> Setting Device ID:  ");
   const int ID0 = A0;
   const int ID1 = A1;
   const int ID2 = A2;
@@ -123,6 +139,7 @@ int deviceID() {
 */
 
 void doEncoder() {
+  Serial.println("## doEncoder called");
   AValue = digitalRead(encoder0PinA);
   BValue = digitalRead(encoder0PinB);
 
@@ -156,15 +173,20 @@ void doEncoder() {
 
   micPreData.gainLevel = rotationStep;
 
-//  dataReadout.updateDisplay();
+  //  dataDisplay.updateDisplay();
 }
 
 
 /*
    Loop
 */
+bool firstRun = true;
 
 void loop() {
+  if (firstRun) {
+    Serial.println(" Hit, No Change");
+    firstRun = false;
+  }
   micPreData.muteButtonState = bool(digitalRead(encoder0Btn));
 
   micPreData.phantomButtonState = bool(digitalRead(phantomButton));
@@ -174,31 +196,31 @@ void loop() {
   micPreData.highPassFilterButtonState = bool(digitalRead(hpfButton));
 
 
-//  Serial.print("\nEncoder Button State:  ");
-//  Serial.println(micPreData.muteButtonState == HIGH ? "HIGH" : "LOW");
-//
-//  Serial.print("Phantom State:  ");
-//  Serial.println(micPreData.phantomButtonState == HIGH ? "HIGH" : "LOW");
-//
-//  Serial.print("Polarity State:  ");
-//  Serial.println(micPreData.polarityButtonState == HIGH ? "HIGH" : "LOW");
-//
-//  Serial.print("Input Z State:  ");
-//  Serial.println(micPreData.inputZButtonState == HIGH ? "HIGH" : "LOW");
-//
-//  Serial.print("Pad State:  ");
-//  Serial.println(micPreData.padButtonState == HIGH ? "HIGH" : "LOW");
-//
-//  Serial.print("HPF State:  ");
-//  Serial.println(micPreData.highPassFilterButtonState == HIGH ? "HIGH" : "LOW");
+  //  Serial.print("\nEncoder Button State:  ");
+  //  Serial.println(micPreData.muteButtonState == HIGH ? "HIGH" : "LOW");
+  //
+  //  Serial.print("Phantom State:  ");
+  //  Serial.println(micPreData.phantomButtonState == HIGH ? "HIGH" : "LOW");
+  //
+  //  Serial.print("Polarity State:  ");
+  //  Serial.println(micPreData.polarityButtonState == HIGH ? "HIGH" : "LOW");
+  //
+  //  Serial.print("Input Z State:  ");
+  //  Serial.println(micPreData.inputZButtonState == HIGH ? "HIGH" : "LOW");
+  //
+  //  Serial.print("Pad State:  ");
+  //  Serial.println(micPreData.padButtonState == HIGH ? "HIGH" : "LOW");
+  //
+  //  Serial.print("HPF State:  ");
+  //  Serial.println(micPreData.highPassFilterButtonState == HIGH ? "HIGH" : "LOW");
 
   if (micPreData.muteButtonState == LOW) {
     //  if (digitalRead(MUTE_BUTTON) == HIGH || digitalRead(encoder0Btn) == HIGH) {
-//    displayMute();
+    //    displayMute();
     Serial.println("MUTE should be Shown!");
   }
 
-  dataReadout.updateDisplay();
+  dataDisplay.updateDisplay();
 
   delay(250);
 }

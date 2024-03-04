@@ -4,7 +4,8 @@
    Constructor
 */
 DataDisplay::DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data) {
-  Serial.println("DataDisplay init called!");
+  Serial.print("DataDisplay init called!  ID = ");
+  Serial.println(data->deviceID);
 
   display = readout;
   micPreData = data;
