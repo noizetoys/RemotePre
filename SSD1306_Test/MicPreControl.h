@@ -8,21 +8,21 @@
 //#include "NetworkInterface.h"
 
 
-#define EncoderMin 1
-#define EncoderMax 120
-#define EncoderStep 8
+//#define EncoderMin 1
+//#define EncoderMax 120
+//#define EncoderStep 8
 
 
 
 class MicPreControl {
   private:
     MicPreData *micPreData;
-    DataReadout *dataReadout;
+//    DataReadout *dataReadout;
     //    NetworkInterface network;
 
     bool dataChanged;
-    volatile int encoder0Pos = 0;
-    volatile int rotationStep, newRotationStep, btn;
+//    volatile int encoder0Pos;
+//    volatile int rotationStep, newRotationStep, btn;
 
     void updateState(bool newPinState, bool *buttonMode, bool *state);
 
@@ -38,11 +38,14 @@ class MicPreControl {
     void updateInputZ(bool newPinState);
     void updateHPF(bool newPinState);
 
+//    void setInfo(MicPreData *data, DataReadout *readoutDisplay);
+
     // Constructors
     MicPreControl() { }
+        MicPreControl(MicPreData *data);
 
-//    MicPreControl(int id, MicPreData *data, DataReadout *readoutDisplay);
-    MicPreControl(MicPreData *data, DataReadout *readoutDisplay);
+    //    MicPreControl(int id, MicPreData *data, DataReadout *readoutDisplay);
+//    MicPreControl(MicPreData *data, DataReadout *readoutDisplay);
 };
 
 #endif

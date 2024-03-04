@@ -6,6 +6,9 @@
 /*
    Screen
 */
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
 
@@ -18,14 +21,14 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 #define encoder0PinB 3
 #define encoder0Btn 4
 
-//#define EncoderMin 1
-//#define EncoderMax 120
-//#define EncoderStep 8
-//
-//volatile int encoder0Pos = 0;
-//volatile int AValue;
-//volatile int BValue;
-//volatile int rotationStep, newRotationStep, btn;
+#define EncoderMin 1
+#define EncoderMax 120
+#define EncoderStep 8
+
+volatile int encoder0Pos = 0;
+volatile int AValue;
+volatile int BValue;
+volatile int rotationStep, newRotationStep, btn;
 
 
 /* Buttons */
@@ -55,6 +58,8 @@ MicPreData micPreData;
 void setup() {
   Serial.begin(115200);
 
+  micPreData = MicPreData(deviceID());
+
   //  encoder = GainEncoder();
   //  attachInterrupt(0, readEncoder, CHANGE);
   //  attachInterrupt(digitalPinToInterrupt(2), readEncoder, CHANGE);
@@ -69,25 +74,33 @@ void setup() {
   //  deviceIDConfig();
 
   // OLED Display
+//  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+//    Serial.println("SSD1306 Allocation Failed!!!");
+//    for (;;);
+//  }
+//  else { 
+//    Serial.println("---> SSD1306 Allocated!!!");
+//  }
 
-  micPreData = MicPreData(deviceID());
-  dataReadout = DataReadout(&display, &micPreData);
-//  MicPreControl(int id, MicPreData * data, DataReadout * readoutDisplay);
+//  dataReadout = DataReadout(&display, &micPreData);
 
-  micPreControl = MicPreControl(&micPreData, &dataReadout);
+  micPreControl = MicPreControl(&micPreData);
+//  micPreControl.setInfo(&micPreData, &dataReadout);
 }
 
 
 void encoderConfig() {
+  Serial.println("encoderConfig called");
   pinMode(encoder0PinA, INPUT_PULLUP);
   pinMode(encoder0PinB, INPUT_PULLUP);
   pinMode(encoder0Btn, INPUT_PULLUP);
 
-  attachInterrupt(0, readEncoder, CHANGE);
+//  attachInterrupt(0, readEncoder, CHANGE);
 }
 
 
 void buttonConfig() {
+  Serial.println("buttonConfig called");
   pinMode(phantomButton, INPUT);
   pinMode(polarityButton, INPUT);
   pinMode(inputZButton, INPUT);
@@ -128,10 +141,12 @@ int deviceID() {
 */
 
 void readEncoder() {
+  Serial.println("readEncoder() called");
+
   //  AValue = digitalRead(encoder0PinA);
   //  BValue = digitalRead(encoder0PinB);
 
-  micPreControl.updateGainLevel(digitalRead(encoder0PinA), digitalRead(encoder0PinB));
+  //  micPreControl.updateGainLevel(digitalRead(encoder0PinA), digitalRead(encoder0PinB));
 
   //  if (encoder0Pos >= EncoderMin && encoder0Pos <= EncoderMax) {
   //    AValue == BValue ? encoder0Pos++ : encoder0Pos--;
@@ -171,18 +186,25 @@ void readEncoder() {
    Loop
 */
 
-void loop() {
-  micPreControl.updateMute(bool(digitalRead(encoder0Btn)));
+bool loopHit = false;
 
-  micPreControl.updatePad(bool(digitalRead(padButton)));
-  micPreControl.updatePhantom(bool(digitalRead(phantomButton)));
-  micPreControl.updatePolarity(bool(digitalRead(polarityButton)));
-  micPreControl.updateInputZ(bool(digitalRead(inputZButton)));
-  micPreControl.updateHPF(bool(digitalRead(hpfButton)));
+void loop() {
+  if (loopHit == false) {
+    Serial.println("Loop Hit!");
+    loopHit = true;
+  }
+
+  micPreControl.updateMute(bool(digitalRead(encoder0Btn)));
+  //
+  //  micPreControl.updatePad(bool(digitalRead(padButton)));
+  //  micPreControl.updatePhantom(bool(digitalRead(phantomButton)));
+  //  micPreControl.updatePolarity(bool(digitalRead(polarityButton)));
+  //  micPreControl.updateInputZ(bool(digitalRead(inputZButton)));
+  //  micPreControl.updateHPF(bool(digitalRead(hpfButton)));
 
   //  serialPrintData();
 
-  //  dataReadout.updateDisplay();
+  //    dataReadout.updateDisplay();
 
   delay(250);
 }

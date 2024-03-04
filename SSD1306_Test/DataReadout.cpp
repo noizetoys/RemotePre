@@ -4,7 +4,7 @@
    Constructor
 */
 DataReadout::DataReadout(Adafruit_SSD1306 *readout, MicPreData *data) {
-  Serial.println("DataReadout init called!");
+  Serial.println("* DataReadout init called!");
 
   display = readout;
   micPreData = data;
@@ -17,13 +17,16 @@ DataReadout::DataReadout(Adafruit_SSD1306 *readout, MicPreData *data) {
     Serial.println("---> SSD1306 Allocated!!!");
   }
 
-  displayAllItems();
+  // Causes Issue....
+  //  displayAllItems();
 
-  delay(2000);
+  //  delay(2000);
 }
 
 
 void DataReadout::updateDisplay() {
+  Serial.println("DataReadout::updateDisplay called!");
+
   if (micPreData->muteButtonState == LOW) {
     displayMute();
   }

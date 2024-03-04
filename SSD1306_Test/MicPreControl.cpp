@@ -2,13 +2,26 @@
 #include "MicPreControl.h"
 
 
-MicPreControl::MicPreControl(MicPreData *data, DataReadout *readoutDisplay)  {
-  Serial.print("* MicPreControl::MicPreControl() called!");
+//MicPreControl::MicPreControl(MicPreData *data, DataReadout *readoutDisplay)  {
+//  Serial.println("* MicPreControl::MicPreControl() called!");
+//
+//  micPreData = data;
+//  dataReadout = readoutDisplay;
+//  //  network = NetworkInterface(id);
+//}
 
-  micPreData = data;
-  dataReadout = readoutDisplay;
-  //  network = NetworkInterface(id);
+
+MicPreControl::MicPreControl(MicPreData *data)  {
+  Serial.println("* MicPreControl::MicPreControl() called!");
+    micPreData = data;
 }
+
+
+//void MicPreControl::setInfo(MicPreData *data, DataReadout *readoutDisplay)  {
+//  Serial.println("* MicPreControl: setInfo() called!");
+//  micPreData = data;
+//  dataReadout = readoutDisplay;
+//}
 
 
 /*
@@ -16,47 +29,43 @@ MicPreControl::MicPreControl(MicPreData *data, DataReadout *readoutDisplay)  {
 */
 
 void MicPreControl::updateGainLevel(int AValue, int BValue) {
-  Serial.println("MicPreControl: Phantom Button Pressed");
-    Serial.print("MicPreControl::updateGainLevel:  Current Encoder Value = ");
-  //  Serial.println(encoder0Pos);
+  return;
+
   
-    if (encoder0Pos >= EncoderMin && encoder0Pos <= EncoderMax) {
-      AValue == BValue ? encoder0Pos++ : encoder0Pos--;
-    }
+//  Serial.println("MicPreControl: Phantom Button Pressed");
+//  Serial.print("MicPreControl::updateGainLevel:  Current Encoder Value = ");
+//
+//  if (encoder0Pos >= EncoderMin && encoder0Pos <= EncoderMax) {
+//    AValue == BValue ? encoder0Pos++ : encoder0Pos--;
+//  }
+//
+//  newRotationStep = (encoder0Pos / EncoderStep);
+//
+//  if (newRotationStep != rotationStep && encoder0Pos >= EncoderStep) {
+//    rotationStep = newRotationStep;
+//    Serial.print("\nRotationStep = ");
+//    Serial.println(rotationStep);
+//  }
+//
+//  if (encoder0Pos < EncoderMin) {
+//    Serial.print(EncoderMin);
+//    Serial.println(" Hit, No Change");
+//    encoder0Pos = EncoderMin;
+//    rotationStep = EncoderMin;
+//  }
+//  else if (encoder0Pos > EncoderMax) {
+//    Serial.print(EncoderMax);
+//    Serial.println(" Hit, No Change");
+//    encoder0Pos = EncoderMax;
+//    rotationStep = EncoderMax / EncoderStep;
+//  }
 
-  newRotationStep = (encoder0Pos / EncoderStep);
-
-  if (newRotationStep != rotationStep && encoder0Pos >= EncoderStep) {
-    rotationStep = newRotationStep;
-    Serial.print("\nRotationStep = ");
-    Serial.println(rotationStep);
-  }
-
-  if (encoder0Pos < EncoderMin) {
-    Serial.print(EncoderMin);
-    Serial.println(" Hit, No Change");
-    encoder0Pos = EncoderMin;
-    rotationStep = EncoderMin;
-  }
-  else if (encoder0Pos > EncoderMax) {
-    Serial.print(EncoderMax);
-    Serial.println(" Hit, No Change");
-    encoder0Pos = EncoderMax;
-    rotationStep = EncoderMax / EncoderStep;
-  }
-
-//  micPreData->gainLevel = rotationStep;
-
-  if (micPreData->gainLevel != rotationStep) {
-    Serial.println("MicPreControl: Pad Button Pressed");
-    micPreData->gainLevel = rotationStep;
-
-    /*
-       Send Data to Network for re-sending to Pre
-    */
-  }
-
-  dataReadout->updateDisplay();
+//  if (micPreData->gainLevel != rotationStep) {
+//    Serial.println("MicPreControl: Pad Button Pressed");
+//    micPreData->gainLevel = rotationStep;
+//  }
+//
+//  dataReadout->updateDisplay();
 }
 
 

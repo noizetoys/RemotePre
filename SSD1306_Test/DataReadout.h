@@ -12,6 +12,7 @@ class DataReadout {
     Adafruit_SSD1306 *display;
 
     void resetText();
+    
     void displayAllItems();
     void displayMute();
     void displayID();
