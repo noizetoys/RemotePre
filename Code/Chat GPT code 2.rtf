@@ -1,0 +1,72 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2759
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 To test all four devices, you can simulate communication between them by running each device's code on their respective platforms (Arduino or Raspberry Pi). Below is a test scenario:\
+\
+1. **Control Raspberry Pi (Master) -> Control Arduino (Slave):**\
+   - The Control Raspberry Pi sends a request to the Control Arduino to retrieve data.\
+   - The Control Arduino responds with dummy data.\
+\
+2. **Control Raspberry Pi (Master) -> Device Side Raspberry Pi (Slave):**\
+   - The Control Raspberry Pi sends updated data to the Device Side Raspberry Pi.\
+   - The Device Side Raspberry Pi receives and processes the data.\
+\
+3. **Device Side Raspberry Pi (Master) -> Device Arduino (Slave):**\
+   - The Device Side Raspberry Pi sends a request to the Device Arduino to retrieve data.\
+   - The Device Arduino responds with dummy data.\
+\
+4. **Device Arduino (Master) -> Control Raspberry Pi (Slave):**\
+   - The Device Arduino sends updated data to the Control Raspberry Pi.\
+   - The Control Raspberry Pi receives and processes the data.\
+\
+Here's a simple Python script to simulate these interactions:\
+\
+```python\
+import requests\
+import time\
+\
+# Test scenario 1: Control Raspberry Pi -> Control Arduino\
+def test_control_pi_to_arduino():\
+    control_pi_url = "http://<control_pi_ip>/update_data"\
+    payload = \{'device_id': 0, 'data': [0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01, 0x00, 0x01, 0xAA]\}\
+    response = requests.post(control_pi_url, json=payload)\
+    print("Response from Control Raspberry Pi:", response.text)\
+\
+# Test scenario 2: Control Raspberry Pi -> Device Side Raspberry Pi\
+def test_control_pi_to_device_pi():\
+    device_pi_url = "http://<device_pi_ip>/update_data"\
+    payload = \{'device_id': 1, 'data': [0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01, 0x00, 0x01, 0xAA]\}\
+    response = requests.post(device_pi_url, json=payload)\
+    print("Response from Device Side Raspberry Pi:", response.text)\
+\
+# Test scenario 3: Device Side Raspberry Pi -> Device Arduino\
+def test_device_pi_to_arduino():\
+    device_arduino_url = "http://<device_arduino_ip>/update_data"\
+    payload = \{'device_id': 2, 'data': [0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01, 0x00, 0x01, 0xAA]\}\
+    response = requests.post(device_arduino_url, json=payload)\
+    print("Response from Device Arduino:", response.text)\
+\
+# Test scenario 4: Device Arduino -> Control Raspberry Pi\
+def test_device_arduino_to_control_pi():\
+    control_pi_url = "http://<control_pi_ip>/update_data"\
+    payload = \{'device_id': 3, 'data': [0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x01, 0x00, 0x01, 0xAA]\}\
+    response = requests.post(control_pi_url, json=payload)\
+    print("Response from Control Raspberry Pi:", response.text)\
+\
+# Run test scenarios\
+test_control_pi_to_arduino()\
+time.sleep(2)\
+test_control_pi_to_device_pi()\
+time.sleep(2)\
+test_device_pi_to_arduino()\
+time.sleep(2)\
+test_device_arduino_to_control_pi()\
+```\
+\
+Replace `<control_pi_ip>`, `<device_pi_ip>`, and `<device_arduino_ip>` with the respective IP addresses of the Control Raspberry Pi, Device Side Raspberry Pi, and Device Arduino.\
+\
+This script will simulate communication between all four devices and print the responses received. Make sure all devices are running and accessible on the network before running the script.}

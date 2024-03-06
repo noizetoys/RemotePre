@@ -1,0 +1,67 @@
+/*
+  VUmeter
+  
+  Reads input from two potentiometers to set the amplitude and vibration of a VU meter. 
+  The sketch maps the input from the potentiometers (0-1023) and maps them to output
+  which is appropriate (0-255) to a VU meter with an 18kOhm resistor connected between 
+  itself and the Arduino.
+  
+  The sketch allows you to understand what values you need to drive a VU meter in your
+  project, it does this by feeding back the values from the potentiometers in the
+  Serial Monitor in the Arduino IDE.
+  
+
+  The circuit:
+  
+  A VU meter salvaged from an old Fostex 250 Cassette Recorder/Mixer, but generally any
+  analogue VU meter should work, with minor modifications.
+  
+  1 18kOhm resistor between VU meter and Arduino Digital pin 6.
+  
+  2 10kOhm potentiometers, both connected to 5V and GND on Arduino and one wire from each
+  wiper on the potentiometers to Analog pin 0 and 1 respectively.
+  
+
+  created 17 Jun. 2014
+  by Daniel Jansson
+  http://www.switchandlever.com
+ 
+  This code is in the public domain.
+
+
+*/
+
+// variables to hold potentiometer values
+
+int VUnits = 0;
+int vibrationDelay = 0;
+
+
+void setup() {
+
+  Serial.begin(9600);      // start serial communication so you can monitor the potentiometer values  
+
+}
+
+
+void loop() {
+
+  VUnits = analogRead(A0);      // read the first potentiometer on pin Analog 0 and assign the value to 'VUnits'
+  VUnits = map(VUnits, 1023, 0, 0, 255);      // map the input from the potentiometer to match the output to the meter
+
+  vibrationDelay = analogRead(A1);  // same as above, but assigning the value to the 'vibrationDelay' variable
+  vibrationDelay = map(vibrationDelay, 1023, 0, 10, 200);   // map the input to a range of delays, experiment to suit your needs
+
+  analogWrite(6, VUnits);    // write the 'VUnits' variable to pin 6, analogWrite will emulate an analog signal 
+  delay(vibrationDelay);    // delay for a time set by the potentiometer
+  analogWrite(6, 0);        // turn off the power to the VU meter entirely for a duration set by vibrationDelay 
+  delay(vibrationDelay);    // this, and the delay, gives the needle time to return back, fully or partially
+
+  Serial.print("Vibration: ");    // print the values back to the Serial Monitor in the Arduino IDE 
+  Serial.print(vibrationDelay); // to be able to see which value suits your application
+
+  Serial.print("  VUnits: ");
+  Serial.println(VUnits);
+
+
+}

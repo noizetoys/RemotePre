@@ -1,0 +1,315 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2759
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Sure, here are the codes for all four devices: "Control" Arduino, "Control" Raspberry Pi, "Device Side" Raspberry Pi, and "Device" Arduino.\
+\
+### Control Arduino:\
+\
+```cpp\
+#include <Wire.h>\
+\
+#define SLAVE_ADDRESS 0x08  // Default slave address\
+#define NUM_DIP_SWITCHES 5\
+\
+struct DeviceData \{\
+    uint8_t device_id;\
+    bool bool_states[6];\
+    uint16_t volume;\
+    bool mute;\
+\};\
+\
+// Pin connected to the multiplexer for notification\
+#define NOTIFICATION_PIN 2\
+\
+// Function to read DIP switches and set device ID\
+int readDipSwitches() \{\
+    int id = 0;\
+    for (int i = 0; i < NUM_DIP_SWITCHES; ++i) \{\
+        id |= digitalRead(i) << i;\
+    \}\
+    return id;\
+\}\
+\
+void setup() \{\
+    Wire.begin(SLAVE_ADDRESS);       // join i2c bus with address\
+    Wire.onRequest(requestEvent);    // register event\
+    pinMode(NOTIFICATION_PIN, OUTPUT);\
+    // Set up DIP switches\
+    for (int i = 0; i < NUM_DIP_SWITCHES; ++i) \{\
+        pinMode(i, INPUT_PULLUP);\
+    \}\
+    // Read DIP switches and set device ID\
+    int device_id = readDipSwitches();\
+    Wire.beginTransmission(SLAVE_ADDRESS);\
+    Wire.write(device_id);\
+    Wire.endTransmission();\
+\}\
+\
+void loop() \{\
+    // Your Arduino code\
+\}\
+\
+void requestEvent() \{\
+    // Notify master about data availability\
+    digitalWrite(NOTIFICATION_PIN, HIGH);\
+\
+    // Create a DeviceData object with dummy data\
+    DeviceData data;\
+    data.device_id = readDipSwitches();\
+    for (int i = 0; i < 6; ++i) \{\
+        data.bool_states[i] = random(0, 2); // Random bool states for demonstration\
+    \}\
+    data.volume = random(0, 101);  // Random volume level\
+    data.mute = random(0, 2);  // Random mute state\
+\
+    // Calculate and append checksum\
+    uint8_t checksum = calculateChecksum((uint8_t*)&data, sizeof(data));\
+    uint8_t data_with_checksum[sizeof(data) + 1];\
+    memcpy(data_with_checksum, &data, sizeof(data));\
+    data_with_checksum[sizeof(data)] = checksum;\
+\
+    // Send the serialized data with checksum\
+    Wire.write(data_with_checksum, sizeof(data_with_checksum));\
+    \
+    // Reset notification pin\
+    digitalWrite(NOTIFICATION_PIN, LOW);\
+\}\
+\
+uint8_t calculateChecksum(uint8_t* data, size_t length) \{\
+    // Calculate checksum for data\
+    uint8_t checksum = 0;\
+    for (size_t i = 0; i < length; ++i) \{\
+        checksum ^= data[i];\
+    \}\
+    return checksum;\
+\}\
+```\
+\
+### Control Raspberry Pi:\
+\
+```python\
+import smbus\
+import RPi.GPIO as GPIO\
+import time\
+import requests\
+\
+app = Flask(__name__)\
+\
+# Raspberry Pi configuration\
+bus = smbus.SMBus(1)  # For Raspberry Pi 2 and older 1 Model A/B boards\
+SLAVE_ADDRESS = 0x08  # Default slave address\
+\
+# GPIO configuration for multiplexer control\
+mux_control_pins = [10, 11, 12, 13]  # Example GPIO pins connected to the multiplexer\
+GPIO.setmode(GPIO.BOARD)\
+for pin in mux_control_pins:\
+    GPIO.setup(pin, GPIO.OUT)\
+\
+# Dictionary to store device data\
+device_data_table = \{\}\
+\
+def select_slave(device_id):\
+    # Function to select the slave using multiplexer\
+    GPIO.output(mux_control_pins, GPIO.LOW)  # Deselect all slaves\
+    binary_id = bin(device_id)[2:].zfill(4)  # Convert device ID to binary\
+    for i, value in enumerate(binary_id):\
+        GPIO.output(mux_control_pins[i], int(value))\
+\
+def read_data_from_slave(device_id):\
+    # Function to read data from the specified slave\
+    select_slave(device_id)\
+    for attempt in range(3):  # Retry mechanism for reliability\
+        try:\
+            # Request data from Arduino\
+            bus.write_byte(SLAVE_ADDRESS, 0)\
+            time.sleep(0.1)  # Short delay to allow the Arduino to respond\
+            # Read response from Arduino\
+            response = bus.read_i2c_block_data(SLAVE_ADDRESS, 0)\
+            return response\
+        except Exception as e:\
+            print(f"Error reading data from Arduino \{device_id\}: \{e\}")\
+            if attempt < 2:\
+                print("Retrying...")\
+                time.sleep(0.5)  # Wait before retrying\
+            else:\
+                print("Failed to read data from Arduino after multiple attempts.")\
+                return None\
+\
+def parse_data(response):\
+    # Function to parse received data into struct\
+    device_id = response[0]\
+    bool_states = response[1:7]\
+    volume = int.from_bytes(response[7:9], byteorder='big')\
+    mute = bool(response[9])\
+    checksum = response[-1]\
+    # Verify checksum\
+    calculated_checksum = sum(response[:-1]) & 0xFF\
+    if calculated_checksum != checksum:\
+        print("Checksum error in data received from Arduino")\
+        return None\
+    return \{'device_id': device_id, 'bool_states': bool_states, 'volume': volume, 'mute': mute\}\
+\
+def update_device_data(device_id, data):\
+    # Function to update device data table\
+    device_data_table[device_id] = data\
+\
+def send_data_to_ethernet_pi(device_id, data):\
+    # Function to send data to Ethernet-connected Raspberry Pi\
+    try:\
+        url = "http\
+\
+://<ethernet_pi_ip>/update_data"\
+        payload = \{'device_id': device_id, 'data': data\}\
+        response = requests.post(url, json=payload)\
+        if response.status_code == 200:\
+            print("Data sent successfully to Ethernet-connected Raspberry Pi")\
+        else:\
+            print("Failed to send data to Ethernet-connected Raspberry Pi")\
+    except Exception as e:\
+        print(f"Error sending data to Ethernet-connected Raspberry Pi: \{e\}")\
+\
+# Main loop\
+while True:\
+    device_id = int(input("Enter device ID (0-15): "))\
+    response = read_data_from_slave(device_id)\
+    if response:\
+        parsed_data = parse_data(response)\
+        if parsed_data:\
+            if device_id not in device_data_table or device_data_table[device_id] != parsed_data:\
+                update_device_data(device_id, parsed_data)\
+                send_data_to_ethernet_pi(device_id, parsed_data)\
+            print("Received data from device ID", parsed_data['device_id'])\
+            print("Bool States:", parsed_data['bool_states'])\
+            print("Volume:", parsed_data['volume'])\
+            print("Mute:", parsed_data['mute'])\
+    else:\
+        print("Failed to receive valid data from Arduino")\
+```\
+\
+### Device Side Raspberry Pi:\
+\
+```python\
+from flask import Flask, request\
+\
+app = Flask(__name__)\
+\
+# Dictionary to store device data received from the control Raspberry Pi\
+device_data_table = \{\}\
+\
+def calculate_checksum(data):\
+    # Calculate checksum for data\
+    checksum = sum(data) & 0xFF\
+    return checksum\
+\
+def validate_checksum(data_with_checksum):\
+    # Validate checksum for received data\
+    data = data_with_checksum[:-1]\
+    received_checksum = data_with_checksum[-1]\
+    calculated_checksum = calculate_checksum(data)\
+    return received_checksum == calculated_checksum\
+\
+@app.route('/update_data', methods=['POST'])\
+def update_data():\
+    data = request.json\
+    device_id = data['device_id']\
+    data_with_checksum = data['data']\
+    if validate_checksum(data_with_checksum):\
+        device_data_table[device_id] = data_with_checksum[:-1]  # Remove checksum before storing\
+        print("Updated data for device ID", device_id)\
+        print("New Data:", device_data_table[device_id])\
+        return 'Data updated successfully'\
+    else:\
+        print("Checksum validation failed for data received from device ID", device_id)\
+        return 'Checksum validation failed'\
+\
+if __name__ == '__main__':\
+    app.run(host='0.0.0.0', port=5000)\
+```\
+\
+### Device Arduino:\
+\
+```cpp\
+#include <Wire.h>\
+\
+#define SLAVE_ADDRESS 0x08  // Default slave address\
+#define NUM_DIP_SWITCHES 5\
+\
+struct DeviceData \{\
+    uint8_t device_id;\
+    bool bool_states[6];\
+    uint16_t volume;\
+    bool mute;\
+\};\
+\
+// Pin connected to the multiplexer for notification\
+#define NOTIFICATION_PIN 2\
+\
+// Function to read DIP switches and set device ID\
+int readDipSwitches() \{\
+    int id = 0;\
+    for (int i = 0; i < NUM_DIP_SWITCHES; ++i) \{\
+        id |= digitalRead(i) << i;\
+    \}\
+    return id;\
+\}\
+\
+void setup() \{\
+    Wire.begin(SLAVE_ADDRESS);       // join i2c bus with address\
+    Wire.onRequest(requestEvent);    // register event\
+    pinMode(NOTIFICATION_PIN, OUTPUT);\
+    // Set up DIP switches\
+    for (int i = 0; i < NUM_DIP_SWITCHES; ++i) \{\
+        pinMode(i, INPUT_PULLUP);\
+    \}\
+    // Read DIP switches and set device ID\
+    int device_id = readDipSwitches();\
+    Wire.beginTransmission(SLAVE_ADDRESS);\
+    Wire.write(device_id);\
+    Wire.endTransmission();\
+\}\
+\
+void loop() \{\
+    // Your Arduino code\
+\}\
+\
+void requestEvent() \{\
+    // Notify master about data availability\
+    digitalWrite(NOTIFICATION_PIN, HIGH);\
+\
+    // Create a DeviceData object with dummy data\
+    DeviceData data;\
+    data.device_id = readDipSwitches();\
+    for (int i = 0; i < 6; ++i) \{\
+        data.bool_states[i] = random(0, 2); // Random bool states for demonstration\
+    \}\
+    data.volume = random(0, 101);  // Random volume level\
+    data.mute = random(0, 2);  // Random mute state\
+\
+    // Calculate and append checksum\
+    uint8_t checksum = calculateChecksum((uint8_t*)&data, sizeof(data));\
+    uint8_t data_with_checksum[sizeof(data) + 1];\
+    memcpy(data_with_checksum, &data, sizeof(data));\
+    data_with_checksum[sizeof(data)] = checksum;\
+\
+    // Send the serialized data with checksum\
+    Wire.write(data_with_checksum, sizeof(data_with_checksum));\
+    \
+    // Reset notification pin\
+    digitalWrite(NOTIFICATION_PIN, LOW);\
+\}\
+\
+uint8_t calculateChecksum(uint8_t* data, size_t length) \{\
+    // Calculate checksum for data\
+    uint8_t checksum = 0;\
+    for (size_t i = 0; i < length; ++i) \{\
+        checksum ^= data[i];\
+    \}\
+    return checksum;\
+\}\
+```\
+\
+These codes should allow communication between the Control Arduino, Control Raspberry Pi, Device Side Raspberry Pi, and Device Arduino, including checksums for error detection and correction. Make sure to replace `<ethernet_pi_ip>` in the Control Raspberry Pi code with the actual IP address of the Ethernet-connected Raspberry Pi.}

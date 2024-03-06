@@ -1,0 +1,22 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2759
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\margl1440\margr1440\vieww18940\viewh21580\viewkind0
+\deftab720
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f0\fs36 \cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 I'm trying to build a remote mic preamp using an Arduino for the controls, which include the controls: gain (12 levels) using a rotary encoder with the switch on the rotary encoder used for mute.  The following controls will use momentary switches:   phase, phantom power,  input impedance,  pad, and high pass filter. \
+\
+This "Control Arduino\'94 (CA) will speak to a Raspberry Pi, referred to as the \'93Control RPi" (CRPi) via I2C.   The address of the CA will be determined on startup using 5 DIP switch pins connected to a PISO shift register at device startup.\
+\
+This CRPi will communicate with the "\outl0\strokewidth0 Device\outl0\strokewidth0 \strokec2  RPi" (DRPi) via ethernet using TCP/IP. When this DRPi receives data, it will forward that data to a "Device Arduino" (DA) over I2C with the corresponding address of the CA contained in the data and trigger a digital pot for gain, and latched relays for the other controls. \
+\
+The CA\'92s will act as slaves to the CRPi. \
+\
+Each CA will use a digital output pin connected to a 16-to-1 multiplexer, the output of the multiplexer will  connect to the GPIO inputs of the CRPi.   When a CA receives triggers from the controls, it compare the change to the appropriate stored state and update the stored state accordingly.  If the state has changed, it will trigger the CRPi that it has new data.  The CRPi will then request the data from the appropriate CA.  When the gain pot is updated (debouncing is required), it will determine if the \'91gain step\'92 (there are 12 steps over the lowest value of 1 highest value of 120) has changed and only signal the CRPi if the gain step, not the rotary encoder value, has changed.\
+\
+The CRPi will store the data locally and use it to compare the new, incoming data from the CA.  New changes will be sent to the DRPi which will then forward it to the DA with the corresponding address. \
+\
+The CA needs to store the state of each control to know when it has been changed (button release triggers a change) and the CRPi needs to store the current states of all the CA\'92s.  On startup of the CRPi, the current state for each CA should be sent to the CA after the CRPi has received the addresses from all the currently I2C connected CA\'92s.}

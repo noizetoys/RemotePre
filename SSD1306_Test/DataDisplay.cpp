@@ -12,7 +12,8 @@ DataDisplay::DataDisplay(Adafruit_SSD1306 *readout, MicPreData *data) {
   micPreData = data;
   //  gainValues = { 25, 29, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60 };
 
-  if (!display->begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+  // if (!display->begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+  if (!display->begin(SSD1306_SWITCHCAPVCC)) {
     Serial.println(F("\nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"));
     Serial.println(F("XXX SSD1306 Allocation Failed XXX"));
     Serial.println(F("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"));

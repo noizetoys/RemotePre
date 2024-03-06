@@ -2,6 +2,7 @@
 #define DATADISPLAY_H
 
 #include <Wire.h>
+#include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "MicPreData.h"

@@ -1,0 +1,75 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2759
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww15880\viewh23060\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 To test all four devices (Control Arduino, Control Raspberry Pi, Device Side Raspberry Pi, and Device Arduino), you can follow these steps:\
+\
+1. **Connectivity Setup:**\
+   - Connect the Control Arduino, Device Arduino, and Raspberry Pis as per your setup requirements.\
+   - Ensure proper connections for I2C communication between the Arduinos and Raspberry Pis.\
+   - Make sure the Ethernet-connected Raspberry Pi is accessible from the Control Raspberry Pi.\
+\
+2. **Run the Device Side Raspberry Pi:**\
+   - Run the Flask application on the Device Side Raspberry Pi to receive data from the Control Raspberry Pi.\
+   - Ensure the Flask server is running and listening for incoming data.\
+\
+3. **Run the Control Raspberry Pi:**\
+   - Run the Python script on the Control Raspberry Pi to communicate with the Control Arduino and send data to the Device Side Raspberry Pi.\
+   - Make sure the Control Raspberry Pi can access the Control Arduino via I2C communication.\
+   - Verify that the data sent to the Device Side Raspberry Pi is received and processed correctly.\
+\
+4. **Run the Control Arduino:**\
+   - Upload the Arduino code to the Control Arduino.\
+   - Ensure the Control Arduino is connected properly and can communicate with the Control Raspberry Pi via I2C.\
+   - Check if the Control Arduino sends data with the correct checksum to the Control Raspberry Pi.\
+\
+5. **Run the Device Arduino:**\
+   - Upload the Arduino code to the Device Arduino.\
+   - Verify that the Device Arduino can receive data from the Device Side Raspberry Pi via I2C.\
+   - Check if the received data is processed correctly on the Device Arduino.\
+\
+6. **Observation and Verification:**\
+   - Monitor the console outputs or logs from each device to observe communication and any error messages.\
+   - Verify that the data sent and received between the devices is consistent and error-free.\
+   - Test various scenarios, such as data transmission with different checksums and error handling.\
+\
+Here's a simple test scenario script in Python to automate the testing process:\
+\
+```python\
+import time\
+import requests\
+\
+# Control Raspberry Pi IP address\
+CONTROL_RPI_IP = "<control_rpi_ip>"\
+\
+# Test data\
+test_data = \{\
+    "device_id": 1,\
+    "data": [1, 1, 1, 1, 1, 1, 50, 0, 1]  # Example data with checksum\
+\}\
+\
+def send_test_data_to_control_rpi():\
+    try:\
+        url = f"http://\{CONTROL_RPI_IP\}:5000/update_data"\
+        response = requests.post(url, json=test_data)\
+        if response.status_code == 200:\
+            print("Test data sent successfully to Control Raspberry Pi")\
+        else:\
+            print("Failed to send test data to Control Raspberry Pi")\
+    except Exception as e:\
+        print(f"Error sending test data to Control Raspberry Pi: \{e\}")\
+\
+def main():\
+    # Send test data to Control Raspberry Pi\
+    send_test_data_to_control_rpi()\
+\
+if __name__ == "__main__":\
+    main()\
+```\
+\
+Replace `<control_rpi_ip>` with the actual IP address of the Control Raspberry Pi.\
+\
+By running this script, you can automate the process of sending test data to the Control Raspberry Pi and observe the behavior of the entire system. Make sure all devices are powered on and properly connected before running the script.}
