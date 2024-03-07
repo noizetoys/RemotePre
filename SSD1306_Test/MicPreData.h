@@ -49,7 +49,7 @@ typedef struct MicPreData {
     highPassFilterButtonState = false;
   }
 
-  void serialPrintData() {
+  void print() {
     // ID
     Serial.print(F("\n\nDevice ID:  "));
     Serial.println(deviceID);
