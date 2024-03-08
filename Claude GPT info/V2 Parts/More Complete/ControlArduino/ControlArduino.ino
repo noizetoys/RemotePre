@@ -1,4 +1,4 @@
-// ControlArduino.ino
+ // ControlArduino.ino
 #include <SPI.h>
 #include <Wire.h>
 #include <Rotary.h>
@@ -11,9 +11,9 @@
 #include "StateManager.h"
 
 // Define SPI pins for OLED display
-#define OLED_DC 9
-#define OLED_CS 10
-#define OLED_RESET 8
+//#define OLED_DC 9
+//#define OLED_CS 10
+//#define OLED_RESET 8
 
 Rotary rotary(ROTARY_ENCODER_PIN_A, ROTARY_ENCODER_PIN_B);
 StateManager stateManager;
